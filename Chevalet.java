@@ -96,6 +96,13 @@ public class Chevalet  implements ActionListener {
 		cases[i].setText(cases[j].getText())	;
 		cases[j].setText(temp);	
 		}
-		
+	
+	public void conversion(String[] a) {
+		if (a.length==7) {
+		for (int i=0; i<7; i++) { this.cases[i].setText(a[i]);}
+		}
+	}
+	
+	
 }	
 	
