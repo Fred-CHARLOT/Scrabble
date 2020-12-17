@@ -20,7 +20,8 @@ public class GestionGrille  implements ActionListener {
 	PartieClient partieClient;
 	Partie partie;
 	Chevalet chevalet;
-	
+	JButton score2;
+	JButton score1;
 //Constructeurs	
 	GestionGrille (int serveurOuclient,Chevalet chevalet){   
 		this.chevalet=chevalet;	
@@ -67,8 +68,8 @@ public class GestionGrille  implements ActionListener {
 		panneau3.setLayout(disposition3);
 		panneau3.setSize(850, 1000);
 		fenetre1.add("North",panneau3);
-				JButton score1 = new JButton("Joueur 1 : 230");
-		JButton score2 = new JButton("Joueur 2 : 145");
+		score1 = new JButton("0");
+		score2 = new JButton("0");
 		panneau3.add(score1);
 		panneau3.add(score2);
 				
@@ -154,7 +155,7 @@ int retrouveCase(int ligne, int colonne) {
 	 return -1;
 }
 	
-void remplirCases(String plateau[][]) {
+void remplirCases(String plateau[][]) {			
 			if (plateau[7][7].equals("*"))fontCaseCentrale(50); else fontCaseCentrale(15);
 			for (int i=0; i<15 ; i++){
 			for (int j=0; j<15; j++){				

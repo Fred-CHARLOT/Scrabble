@@ -7,7 +7,7 @@ import javax.swing.*;
 
 
 public class Plateau {
-	String [][] plateau ;
+	static String [][] plateau ;
 	AffichageGrille  f;
 	
 	

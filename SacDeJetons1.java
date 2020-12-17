@@ -2,10 +2,10 @@
 
 import java.util.ArrayList;
 
-public class SacDeJetons {
+public class SacDeJetons1 {
 	ArrayList <String> sac = new ArrayList<String>() ;
 	
-		SacDeJetons(){
+		SacDeJetons1(){
 			for (int i=0;i<=14;i++) {sac.add("E");}
 			for (int i=15;i<=23;i++){sac.add("A");}
 			for (int i=24;i<=31;i++) {sac.add("I");}

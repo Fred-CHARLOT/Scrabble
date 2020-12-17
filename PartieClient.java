@@ -3,15 +3,21 @@ import java.io.ObjectOutputStream;
 import java.awt.Color;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
+
+import javax.management.StringValueExp;
 
 public class PartieClient {
-	boolean partieEnCours = true;		
+	boolean partieEnCours;		
 	static boolean joueurAjoué;
 	static boolean joueurAPassé;
-	static int scoreJoueur1;
+	final boolean OnAttendQueLeJoueurJoue=true;
+	static int scoreJoueur1=0;
+	static int scoreServeur=0;
+	public String nom;
 	Chevalet chevalet;
 	GestionGrille grille; 
-	static Plateau plateau;					//Static
+	static Plateau plateau;					
 	Client client;
 		
 	PartieClient(){
@@ -19,75 +25,95 @@ public class PartieClient {
 		 plateau= new Plateau();	
          chevalet=new Chevalet(1);
          grille= new GestionGrille(1,chevalet);
-		
+         try {								
+				chevalet.reglette =(String [])client.in.readObject();								
+				nom =(String) client.in.readObject();						
+				grille.score2.setText( nom + " : " + String.valueOf(scoreServeur));
+				grille.score1.setText( " Client : " + String.valueOf(scoreServeur));					
+				} catch (IOException | ClassNotFoundException e) {
+			           e.printStackTrace();
+		}     
 	}	
-		
-		
+	
+	
 	public void deroulement() {
-		boolean OnAttendQueLeJoueurJoue=true;
-		joueurAjoué=true;
-		joueurAPassé=false;
-		try {  	
-		while (partieEnCours == true) {	    	  	
-	    	//on attend le coup du serveur
-	    	Object objetReçu = client.in.readObject();
-	    	if (chevalet.coup.size()!=0)chevalet.videCoup();
-	         Plateau.plateau =(String[][]) objetReçu;	         
-	         grille.remplirCases(Plateau.plateau);
-	         joueurAjoué=false;
-	        //Le client joue   
-	        chevalet.valider.setBackground(Color.green);
-	     	while (OnAttendQueLeJoueurJoue) {	     		  
-	     		 try { 	     			
-	     			 Thread.sleep (1);
-	     			 } catch (Exception e) {
-	     		     e.printStackTrace();
-	     		    }	     		
-	     		if (joueurAjoué==true) {	
-	     		if (joueurAPassé)break;	
-	     		miseAJourTableau();
-	     		break;
-	     		}
-	     	} 
-	     	
-	     	//if (joueurAjoué==true){   //pourquoi la condition?
-	     	
-	     	client.out.writeObject(Plateau.plateau);
-			client.out.flush();   	 
-			chevalet.coup.clear();//pour ne pas perdre des lettres
-			grille.remplirCases(Plateau.plateau);
-			joueurAjoué=true;
-			joueurAPassé=false;
-	     	//}
-			     
-	    System.out.println("fin1");
-		}
-		 
-		System.out.println("fin2");//a priori mal placé
-		client.out.close();
-	   	client.in.close();
-	   	client.clientSocket.close();
-		
-		} catch (IOException | ClassNotFoundException e) {
+		partieEnCours =true;			 
+		while (partieEnCours == true) {	    				
+			ilJoue() ;				
+			jeJoue();			 
+			envoyerObjet(Plateau.plateau); 
+			envoyerObjet(scoreJoueur1);
+		}	
+	}
+	
+	
+	
+	private void envoyerObjet(Object objetEnvoyé) {
+		try { 		
+		client.out.writeObject(objetEnvoyé);
+		client.out.flush();  
+		} catch (IOException e) {
 	           e.printStackTrace();
-	      }
-	     
-	  System.out.println("fin3");
+		}
 	}
 	
 	
 	
 	
+	private void ilJoue() {
+		joueurAjoué=true;		
+		try {
+		Plateau.plateau =(String[][]) client.in.readObject();
+    	if (chevalet.coup.size()!=0)chevalet.videCoup();                  
+        grille.remplirCases(Plateau.plateau);      
+        scoreServeur=(int) client.in.readObject();
+        grille.score2.setText(nom + " : " + String.valueOf(scoreServeur));
+        joueurAjoué=false;    
+        if (scoreServeur==3) fermeture();
+		} catch (IOException | ClassNotFoundException e) {
+	           e.printStackTrace();
+	      }
+	}
 	
 	
+	
+	private void jeJoue() {
+		joueurAjoué=false;
+		joueurAPassé=false;
+		while (OnAttendQueLeJoueurJoue) {	     		  
+		chevalet.valider.setBackground(Color.green);		   
+	     	if (joueurAjoué==true) {		     	
+	     	if (joueurAPassé)break;	
+	     	scoreJoueur1++;
+	     	miseAJourTableau();
+	     	grille.remplirCases(Plateau.plateau);//(pour enlever les couleurs)
+	     	grille.score1.setText(String.valueOf("mon score : " +scoreJoueur1));
+	     	chevalet.coup.clear();
+	     	break;
+	     	}
+	     }		
+	}
+	
+		
 	void miseAJourTableau() {
 		for (var i:chevalet.coup) {		
 			Plateau.plateau[i.ligne][i.colonne]=i.lettre;}
 	}
 	
+	void fermeture () {
+		try { 		
+			client.out.close();
+		   	client.in.close();
+		   	client.clientSocket.close();
+		   	System.exit(0);
+			} catch (Exception e) {
+			     e.printStackTrace();
+			    }			
+		  System.out.println("fin3");
+	}
 	
 	
-}
+	}
 		
 			
 		
