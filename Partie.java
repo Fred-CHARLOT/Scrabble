@@ -1,5 +1,4 @@
 import java.awt.Color;
-import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -9,7 +8,7 @@ Plateau plateau;
 SacJeton sac;
 Chevalet chevalet;
 GestionGrille grille;
-String reglette []= {"Z","A","Z","A","Z","A","X"} ;
+String reglette [];
 boolean partieEnCours;
 static boolean joueurAjoué;
 static boolean joueurAPassé;
@@ -21,30 +20,42 @@ private int scoreJoueur0;
 		serveur = new Serveur(nombreDeJoueur);
 		plateau=new Plateau();
 		sac= new SacJeton();
-		chevalet = new Chevalet(0);
-		grille = new GestionGrille(0,chevalet);
+		reglette=sac.tirage(7);
 		envoyerObjetA(reglette, 0);
+		reglette=sac.tirage(7);
+		chevalet = new Chevalet(0,reglette);
+		grille = new GestionGrille(0,chevalet);
 		envoyerObjetA("Raoul", 0);		
 		grille.score2.setText("Raoul : " +String.valueOf(score));
 		grille.score1.setText("client :" +String.valueOf(scoreJoueur0));
 	}
 	
 		
-	public 	void deroulement() {
+	public	void deroulement() {
 		partieEnCours = true;		
 		while (partieEnCours==true) {  			
 			jeJoue()	;
-	
 			envoyerObjetA(Plateau.plateau, 0);			
 			envoyerObjetA(score, 0);			
-			if (score==3) fermeture();
-						
-			ilJoue(0); //le joueur 0 joue			
+			if (testVictoire()) finDePartie() ; //
+			//changer mes jetons			
+			ilJoue(0); //le joueur 0 joue	
+			//test de victoire  donc prévoir une méthode de terminaison
+			//reception du nombre de jetons
+			//envoie des nouveaux jetons
 		}				
 	}
 	
+	private boolean testVictoire() {
+		return (score==3);
+	}
 	
-	public void envoyerObjetA(Object objetEnvoye, int joueur) {
+	private void finDePartie() {
+		fermeture();
+	}
+	
+	
+	private void envoyerObjetA(Object objetEnvoye, int joueur) {
 		try { 
 			serveur.out[joueur].writeObject(objetEnvoye); 
 			serveur.out[joueur].flush();				
@@ -93,7 +104,7 @@ private int scoreJoueur0;
 	
 	
 
-	void fermeture() {		
+	private void fermeture() {		
 		try {
 		for (int i=0;i<serveur.nombreDeStream; i++) {			
 			serveur.out[i].close();			

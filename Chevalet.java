@@ -16,18 +16,19 @@ import javax.swing.JPanel;
 
 public class Chevalet  implements ActionListener {
 	JButton cases [];  //creation du tableau de 7 lettres
-	ArrayList <CaseCourante> coup= new ArrayList <CaseCourante>() ;
-	String reglette []= new String [7] ;
+	ArrayList <CaseCourante> coup= new ArrayList <CaseCourante>() ;	
 	JButton valider, passer, échanger,permuter;
 	JFrame	fenetre1;
 	JPanel panneau1,panneau2;
 	GridLayout disposition1, disposition2;
 	int caseCourante=7;
 	int serveurOuClient;
+	String reglette[];
 	
-	Chevalet (int ServeurClient){
+	Chevalet (int ServeurClient,String reglette [] ){
 		serveurOuClient=ServeurClient;
-		cases = new JButton [7];		
+		cases = new JButton [7];
+		this.reglette=reglette;
 		if ( serveurOuClient==0) fenetre1=new JFrame("Scrabble Serveur by Houssem, Fred and JB");	
 		else fenetre1=new JFrame("Scrabble Client by Houssem, Fred and JB");
 		fenetre1.setSize(800, 100) ;
@@ -38,25 +39,16 @@ public class Chevalet  implements ActionListener {
 		disposition1 = new GridLayout(1, 7); 
 		panneau1.setLayout(disposition1);
 		fenetre1.add("Center",panneau1);
+		
 
 
-
-		for ( int colonne=0  ; colonne< 7;colonne++) {		
+		for ( int colonne=0  ; colonne< 7;colonne++) {		//création du tableau de JButton
 			cases[colonne]= new JButton();
 			panneau1.add(cases[colonne]);
 			cases[colonne].addActionListener(this);
 		}			
-
-		cases[0].setText("<html>P<sub>     3</sub></html>"); // cette partie est à modifier: j'ai mis 7 lettres au hasard, il faudra les tirer dans le sac.
-		cases[1].setText("<html>A<sub>     1</sub></html>");
-		cases[2].setText("<html>T<sub>     1</sub></html>");
-		cases[3].setText("<html>R<sub>     1</sub></html>");
-		cases[4].setText("<html>R<sub>     1</sub></html>");
-		cases[5].setText("<html>I<sub>     1</sub></html>");	
-		cases[6].setText("<html>E<sub>     1</sub></html>");
 		
-		
-		
+		afficheReglette();
 		
 		panneau2 = new JPanel();
 		disposition2 = new GridLayout(1, 4); 
@@ -78,31 +70,7 @@ public class Chevalet  implements ActionListener {
 		
 	}
 	
-/*  Si besoin d'utiliser chevalet dans "partie"
-	Chevalet(int serveurOuClient,Partie partie ){
-		this.partie=partie;
-		affichage(serveurOuClient);
-	}
-	
-		Chevalet(int serveurOuClient,PartieClient partie ){
-		this.partieClient=partie;
-		affichage(serveurOuClient);
-}
-	
-public void affichage(int serveurOuClient) {
-	
-	
-	
-}
-	*/	
-	
-	
-	
-	
-	
-	
-
-	
+	int toto=51;
 	
 	public void actionPerformed(ActionEvent événement)  { /// EVENENEMENTactionPerformed
 		
@@ -148,10 +116,9 @@ public void affichage(int serveurOuClient) {
 		System.out.println("rhooo, t'as rien trouvé?");		// à modifier aussi
 		}
 		
-		if (leBouton==permuter) {
-							
-			
-			// à modifier aussi
+		if (leBouton==permuter) {				
+			this.reglette=ModifAleat();
+			afficheReglette();
 			}
 		
 		
@@ -178,14 +145,25 @@ public void affichage(int serveurOuClient) {
 		cases[i].setBackground(null);cases[j].setBackground(null);
 		temp=cases[i].getText();
 		cases[i].setText(cases[j].getText())	;
+		reglette[i]=reglette[j];
 		cases[j].setText(temp);	
+		reglette[j]=temp;		
 		}
 	
+	void majReglette(String nouvellesLettres[]) {
+		int indReglette=0;
+		for (int indNL=0; indNL<nouvellesLettres.length; indNL++) {
+			while (!reglette[indReglette].equals(""))indReglette++;
+			reglette[indReglette]=nouvellesLettres[indNL];			
+		}
+		afficheReglette();
+	}
 	
+	void afficheReglette() {
+		for (int i=0; i<7;i++)cases[i].setText(reglette[i]);		
+	}
 	
-	
-	
-void videCoup()	{
+	void videCoup()	{
 		int compteur=0;
 		for (var i : coup) {
 			while (!cases[compteur].getText().equals(""))compteur++;
@@ -194,18 +172,15 @@ void videCoup()	{
 	coup.clear();
 	}
 
-String[] ModifAleat() {
-	
-	ArrayList <String> a = new ArrayList(Arrays.asList(this.cases));
-	String[] b = new String[7];
-	
+	String [] ModifAleat() {	
+	ArrayList <String> a = new ArrayList(Arrays.asList(this.reglette));
+	String[] b = new String[7];	
 	for (int i=0;i<7;i++) {
 		Random tirage= new Random();
 		int d = tirage.nextInt(7-i);
 		b[i] = a.get(d);
 		a.remove(d);
-		}
-	
+		}	
 	return b;
 	}
 

@@ -19,14 +19,17 @@ public class PartieClient {
 	GestionGrille grille; 
 	static Plateau plateau;					
 	Client client;
-		
+	String reglette[];	
 	PartieClient(){
 		client = new Client();
 		 plateau= new Plateau();	
-         chevalet=new Chevalet(1);
+         
          grille= new GestionGrille(1,chevalet);
+         
+         
          try {								
-				chevalet.reglette =(String [])client.in.readObject();								
+				reglette =(String [])client.in.readObject();
+				chevalet=new Chevalet(1,reglette);
 				nom =(String) client.in.readObject();						
 				grille.score2.setText( nom + " : " + String.valueOf(scoreServeur));
 				grille.score1.setText( " Client : " + String.valueOf(scoreServeur));					
@@ -43,6 +46,9 @@ public class PartieClient {
 			jeJoue();			 
 			envoyerObjet(Plateau.plateau); 
 			envoyerObjet(scoreJoueur1);
+			//envoyer nombre de jetons à changer
+			//recevoir nouveaux jetons.
+			//afficher les nouveaux jetons.
 		}	
 	}
 	

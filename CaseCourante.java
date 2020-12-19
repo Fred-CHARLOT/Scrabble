@@ -1,7 +1,6 @@
+import java.io.Serializable;
 
-
-
-public class CaseCourante {
+public class CaseCourante implements Serializable {
 public int ligne, colonne;
 public String bonus,lettre;
 	

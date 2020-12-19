@@ -113,6 +113,7 @@ public class GestionGrille  implements ActionListener {
 						chevalet.coup.add(new CaseCourante(ligne, colonne, cases[ligne][colonne].getText(),chevalet.cases[chevalet.caseCourante].getText()));	
 						cases[ligne][colonne].setText(chevalet.cases[chevalet.caseCourante].getText() );							
 						chevalet.cases[chevalet.caseCourante].setText("");chevalet.cases[chevalet.caseCourante].setBackground(null);
+						chevalet.reglette[chevalet.caseCourante]="";
 						chevalet.caseCourante=7;
 						
 						}
@@ -121,6 +122,7 @@ public class GestionGrille  implements ActionListener {
 						if (position ==-1) break;  //si c'est un coup joué un tour précédent
 							for (int i=0; i<7;i++) { //si c'est un coup courant, on remet la lettre dans le chevalet
 								if (chevalet.cases[i].getText().equals("")){ /// à la premiere case vide
+									chevalet.reglette[i]=cases[ligne][colonne].getText();//et dans la reglette
 									chevalet.cases[i].setText(cases[ligne][colonne].getText());   //  on met dans le chevalet
 									if ((ligne==7)&&(colonne==7))fontCaseCentrale(50);    // gerer le probleme de la police de la case centrale
 									cases[ligne][colonne].setText(chevalet.coup.get(position).bonus);//on met sur la grille
