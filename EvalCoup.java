@@ -18,7 +18,7 @@ public class EvalCoup {
 				int b = k.valeur;
 				/*System.out.println(b);*/
 				String c = k.bonus;
-				/*System.out.println(c)*/
+				/*System.out.println(c)*/				
 				if (c.equals("LD")) {somme = somme + 2*b;}
 				if (c.equals("LT")) {somme = somme + 3*b;}
 				if (!c.equals("LD") && !c.equals("LT")) {somme = somme + b;}
@@ -38,8 +38,8 @@ public class EvalCoup {
 			for (var k:coup) {
 				
 				String c = k.bonus;
-				if (c.equals("MD")) {Dcoeff=2*Dcoeff;}
-				if (c.equals("MT")) {Tcoeff=3*Tcoeff;}
+				if (c.equals("MD")||(c.equals("*"))) {Dcoeff=2*Dcoeff;}
+				if (c.equals("MT")) {Tcoeff=3*Tcoeff;}				
 			}
 			
 				score = score * Dcoeff * Tcoeff;
@@ -62,14 +62,14 @@ public class EvalCoup {
 			   
 		
 			
-	public  int MiseAJourScore (int score, int scorecoup) {
-		score = score + scorecoup;
-	return score;
-		
+	public  int miseAJourScore (int score, ArrayList <CaseCourante[]> ensMots) {
+		score = score + scoreCoup(ensMots);
+		System.out.println(ensMots.get(0)[1].valeur);
+		return score;
 	}
 	
 	
-	public  int ScoreFinal(int score, CaseCourante[] chevalet) {
+	public  int scoreFinal(int score, CaseCourante[] chevalet) {
 		
 		score=score - sommeLettres(chevalet);
 		return score;

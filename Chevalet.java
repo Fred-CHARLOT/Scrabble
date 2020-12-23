@@ -39,7 +39,7 @@ public class Chevalet  implements ActionListener {
 		disposition1 = new GridLayout(1, 7); 
 		panneau1.setLayout(disposition1);
 		fenetre1.add("Center",panneau1);
-		
+		fenetre1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
 
 
 		for ( int colonne=0  ; colonne< 7;colonne++) {		//création du tableau de JButton
@@ -70,8 +70,7 @@ public class Chevalet  implements ActionListener {
 		
 	}
 	
-	int toto=51;
-	
+		
 	public void actionPerformed(ActionEvent événement)  { /// EVENENEMENTactionPerformed
 		
 		JButton leBouton = (JButton) événement.getSource(); /// EVENENEMENT 
@@ -117,7 +116,7 @@ public class Chevalet  implements ActionListener {
 		}
 		
 		if (leBouton==permuter) {				
-			this.reglette=ModifAleat();
+			this.reglette=modifAleat();
 			afficheReglette();
 			}
 		
@@ -172,7 +171,7 @@ public class Chevalet  implements ActionListener {
 	coup.clear();
 	}
 
-	String [] ModifAleat() {	
+	String [] modifAleat() {	
 	ArrayList <String> a = new ArrayList(Arrays.asList(this.reglette));
 	String[] b = new String[7];	
 	for (int i=0;i<7;i++) {

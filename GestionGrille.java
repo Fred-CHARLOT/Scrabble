@@ -17,8 +17,8 @@ public class GestionGrille  implements ActionListener {
 	JPanel panneau1;
 	GridLayout disposition1;
 	int serveurOuClient;
-	PartieClient partieClient;
-	Partie partie;
+	//PartieClient partieClient;
+	//Partie partie;
 	Chevalet chevalet;
 	JButton score2;
 	JButton score1;
@@ -50,16 +50,18 @@ public class GestionGrille  implements ActionListener {
 	public void affichage(int serveurOuclient) {
 		cases = new JButton [15][15];
 		if (serveurOuclient==0) fenetre1=new JFrame("Scrabble Serveur by Houssem, Fred & JB ");	
-		else fenetre1=new JFrame("Scrabble Client by Houssem, Fred & JB ");	
+		else fenetre1=new JFrame("Scrabble Client by Houssem, Fred & JB " +chevalet.caseCourante);	
 		fenetre1.setSize(850, 750) ;
 		fenetre1.setLocationRelativeTo(null);//pour centrer la fenetre
 		fenetre1.setVisible(true);
-		
+		fenetre1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
+		fenetre1.setAlwaysOnTop(true);
 		//Grille
 		panneau1 = new JPanel();
 		disposition1 = new GridLayout(15, 15); 
 		panneau1.setLayout(disposition1);
 		fenetre1.add(panneau1);
+		
 		
 		
 		//Scores
@@ -81,7 +83,7 @@ public class GestionGrille  implements ActionListener {
 	
 	
 	public void tableauBoutons() {
-		for ( int ligne=0  ; ligne< 15;ligne++) {
+			for ( int ligne=0  ; ligne< 15;ligne++) {
 			for (int colonne=0;colonne<15; colonne++) {
 				cases[ligne][colonne]= new JButton();
 				panneau1.add(cases[ligne][colonne]);
@@ -99,7 +101,7 @@ public class GestionGrille  implements ActionListener {
 	}
 	
 	
-		
+	//
 	
 		public void actionPerformed(ActionEvent événement)  { /// EVENENEMENT
 		 
@@ -108,8 +110,8 @@ public class GestionGrille  implements ActionListener {
 				for ( int ligne=0  ; ligne< 15;ligne++) {
 				for (int colonne=0;colonne<15; colonne++) {	
 					if (leBouton==cases[ligne][colonne])  {							
-						if ((chevalet.caseCourante!=7)&& caseLibre(ligne,colonne)) { //on a cliqué sur une lettre du chevalet	
-						if ((ligne==7)&&(colonne==7))fontCaseCentrale(15); //gestion de la taille de la police de la case centrale
+						if ((chevalet.caseCourante!=7)&& caseLibre(ligne,colonne)) { //on a cliqué sur une lettre du chevalet							
+							if ((ligne==7)&&(colonne==7))fontCaseCentrale(15); //gestion de la taille de la police de la case centrale
 						chevalet.coup.add(new CaseCourante(ligne, colonne, cases[ligne][colonne].getText(),chevalet.cases[chevalet.caseCourante].getText()));	
 						cases[ligne][colonne].setText(chevalet.cases[chevalet.caseCourante].getText() );							
 						chevalet.cases[chevalet.caseCourante].setText("");chevalet.cases[chevalet.caseCourante].setBackground(null);
