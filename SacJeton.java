@@ -104,7 +104,14 @@ public class SacJeton {
 		return a;
 	}	
 	
-	
+	public String[] recupjetons(int n) { /* n est le nombre de jeton à remplacer */
+		
+		n=((this.sac_jeton).size()<=n)?n:(this.sac_jeton).size();
+		String[] b = new String[n];
+		b  = this.tirage(n);
+		return b;
+	}
+		
 	
 		
 		
