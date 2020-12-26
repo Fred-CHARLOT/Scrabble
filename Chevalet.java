@@ -21,7 +21,7 @@ public class Chevalet  implements ActionListener {
 	JFrame	fenetre1;
 	JPanel panneau1,panneau2;
 	GridLayout disposition1, disposition2;
-	int caseCourante=7;
+	int caseCourante=7,jetonsAChanger=0;
 	int serveurOuClient;
 	String reglette[];
 	
@@ -77,17 +77,23 @@ public class Chevalet  implements ActionListener {
 		
 		
 		if ((leBouton==valider)&& (Partie.joueurAjoué==false)&&(serveurOuClient==0)  ){			
-			 //à rajouter  : et que le positionnement est valide
-				//extraire les mots
-				//valider les mots
-				//calculer le score
-				//envoyer le tableau: pour l'instant c'est en static: pas gênant ici mais gênant quand on passe
-				
+			 	// à partir de la Array list "coup" :
+				//vérifier que le positionnement est valide.
+			//Si c'est bon :
+				//Extraire les mots de coup, les verifier dans un dictionnaire(message d'erreur avec le mot faux sinon?)
+				//et si c'est bon, les mettre dans une array list de tableaux cases courantes.(chaque tableau est un mot)
+				//calculer le score à l'aide de cette liste et d'EvalCoup.
+			//sinon: renvoyer les jetons sur le chevalets(pour mettre coup.size à zéro)
+			//peut être prévoir un message d'erreur, style les lettres ne sont pas alignées.
+			
+				jetonsAChanger=coup.size();
 				Partie.joueurAjoué=true;
 				valider.setBackground(null); //changer la couleur du bouton pour passer la main
 		}	
 		
 		if ((leBouton==valider)&& (PartieClient.joueurAjoué==false)&& (serveurOuClient==1)) { 
+		
+			jetonsAChanger=coup.size();
 			PartieClient.joueurAjoué=true;  
 			valider.setBackground(null);
 		 }
@@ -113,6 +119,7 @@ public class Chevalet  implements ActionListener {
 		
 		if (leBouton==échanger) {
 		System.out.println("rhooo, t'as rien trouvé?");		// à modifier aussi
+		
 		}
 		
 		if (leBouton==permuter) {				
@@ -138,6 +145,10 @@ public class Chevalet  implements ActionListener {
 				
 			}		
 		}		
+	
+	public int getJetonsAChanger() {
+		return jetonsAChanger;
+	}
 	
 	void permute(int i,int j) {
 		String temp;

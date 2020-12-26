@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 
@@ -17,11 +18,12 @@ public class GestionGrille  implements ActionListener {
 	JPanel panneau1;
 	GridLayout disposition1;
 	int serveurOuClient;
+	String blanc;
 	//PartieClient partieClient;
 	//Partie partie;
 	Chevalet chevalet;
 	JButton score2;
-	JButton score1;
+	JButton score1,jetonsRestant;
 //Constructeurs	
 	GestionGrille (int serveurOuclient,Chevalet chevalet){   
 		this.chevalet=chevalet;	
@@ -51,11 +53,11 @@ public class GestionGrille  implements ActionListener {
 		cases = new JButton [15][15];
 		if (serveurOuclient==0) fenetre1=new JFrame("Scrabble Serveur by Houssem, Fred & JB ");	
 		else fenetre1=new JFrame("Scrabble Client by Houssem, Fred & JB " +chevalet.caseCourante);	
-		fenetre1.setSize(850, 750) ;
+		fenetre1.setSize(1100, 750) ;
 		fenetre1.setLocationRelativeTo(null);//pour centrer la fenetre
 		fenetre1.setVisible(true);
 		fenetre1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
-		fenetre1.setAlwaysOnTop(true);
+		
 		//Grille
 		panneau1 = new JPanel();
 		disposition1 = new GridLayout(15, 15); 
@@ -66,15 +68,16 @@ public class GestionGrille  implements ActionListener {
 		
 		//Scores
 		JPanel panneau3 = new JPanel();
-		GridLayout disposition3 = new GridLayout(1, 2); 
+		GridLayout disposition3 = new GridLayout(1, 3); 
 		panneau3.setLayout(disposition3);
-		panneau3.setSize(850, 1000);
+		panneau3.setSize(850, 750);
 		fenetre1.add("North",panneau3);
 		score1 = new JButton("0");
+		jetonsRestant=new JButton("il reste : 88 jetons");
 		score2 = new JButton("0");
-		panneau3.add(score1);
-		panneau3.add(score2);
-				
+		panneau3.add(score1);		
+		panneau3.add(jetonsRestant);
+		panneau3.add(score2);		
 		tableauBoutons();
 		
 		remplirCases(Plateau.plateau);
@@ -112,28 +115,46 @@ public class GestionGrille  implements ActionListener {
 					if (leBouton==cases[ligne][colonne])  {							
 						if ((chevalet.caseCourante!=7)&& caseLibre(ligne,colonne)) { //on a cliqué sur une lettre du chevalet							
 							if ((ligne==7)&&(colonne==7))fontCaseCentrale(15); //gestion de la taille de la police de la case centrale
-						chevalet.coup.add(new CaseCourante(ligne, colonne, cases[ligne][colonne].getText(),chevalet.cases[chevalet.caseCourante].getText()));	
-						cases[ligne][colonne].setText(chevalet.cases[chevalet.caseCourante].getText() );							
+							
+							if (chevalet.cases[chevalet.caseCourante].getText().equals(" ")) {
+								blanc =JOptionPane.showInputDialog("Quelle lettre veux tu mettre?");
+								chevalet.coup.add(new CaseCourante(ligne, colonne, cases[ligne][colonne].getText(),blanc, 0));
+								chevalet.coup.get(chevalet.coup.size()-1).valeur=0;
+								cases[ligne][colonne].setText(blanc);
+							}
+							else {
+							cases[ligne][colonne].setText(chevalet.cases[chevalet.caseCourante].getText() );							
+							chevalet.coup.add(new CaseCourante(ligne, colonne, cases[ligne][colonne].getText(),chevalet.cases[chevalet.caseCourante].getText()));
+							}
 						chevalet.cases[chevalet.caseCourante].setText("");chevalet.cases[chevalet.caseCourante].setBackground(null);
 						chevalet.reglette[chevalet.caseCourante]="";
 						chevalet.caseCourante=7;
 						
-						}
+					}
 						else if ((chevalet.caseCourante==7)&& !caseLibre(ligne,colonne)) { //on n'a pas cliqué sur une lettre du chevalet
 						int position = 	retrouveCase(ligne,colonne);				//est ce un coup courant et si oui en quelle position
 						if (position ==-1) break;  //si c'est un coup joué un tour précédent
-							for (int i=0; i<7;i++) { //si c'est un coup courant, on remet la lettre dans le chevalet
+							for (int i=0; i<7;i++) { //si c'est un coup courant, on va remettre la lettre dans le chevalet
 								if (chevalet.cases[i].getText().equals("")){ /// à la premiere case vide
-									chevalet.reglette[i]=cases[ligne][colonne].getText();//et dans la reglette
-									chevalet.cases[i].setText(cases[ligne][colonne].getText());   //  on met dans le chevalet
+									
+									if (chevalet.coup.get(position).valeur==0) {//cas d'un joker
+										chevalet.reglette[i]=" ";
+										chevalet.cases[i].setText(" ");
+									}
+									else {			
+										chevalet.reglette[i]=cases[ligne][colonne].getText();//on met dans la reglette
+										chevalet.cases[i].setText(cases[ligne][colonne].getText());   //  on met dans le chevalet
+									}
+									
 									if ((ligne==7)&&(colonne==7))fontCaseCentrale(50);    // gerer le probleme de la police de la case centrale
 									cases[ligne][colonne].setText(chevalet.coup.get(position).bonus);//on met sur la grille
 									chevalet.coup.remove(retrouveCase(ligne, colonne));//on efface le coup de la lise de coups courants
 									break;
-								}
+								} 
 							}
 						}
-					}
+						}
+					
 				}	
 				}
 				

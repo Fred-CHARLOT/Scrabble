@@ -31,7 +31,8 @@ public class PartieClient {
 				grille= new GestionGrille(1,chevalet);
 				nomServeur =(String) client.in.readObject();						
 				grille.score2.setText( nomServeur + " : " + String.valueOf(scoreServeur));
-				grille.score1.setText( nomJoueur1 + String.valueOf(scoreJoueur1));					
+				grille.score1.setText( nomJoueur1 + " : "+ String.valueOf(scoreJoueur1));		
+				envoyerObjet(nomJoueur1);
 				} catch (IOException | ClassNotFoundException e) {
 			           e.printStackTrace();
 		}     
@@ -41,15 +42,16 @@ public class PartieClient {
 	public void deroulement() {
 		partieEnCours =true;			 
 		while (partieEnCours == true) {	    				
-			ilJoue() ;				
-			jeJoue();			 
-			envoyerObjet(Plateau.plateau); 
-			envoyerObjet(scoreJoueur1);
-			//envoyer nombre de jetons à changer
+			ilJoue() ;		
 			//tester si c'est la fin de la partie
-			//recevoir nouveaux jetons.
-			//recevoir le nombre de lettres restantes
-			//afficher les nouveaux jetons.
+			jeJoue();			 
+			envoyer();
+			chevalet.coup.clear();
+			chevalet.majReglette((String [])recevoirObjet());
+			//tester si c'est la fin de la partie
+			
+		
+	
 		}	
 	}
 	
@@ -62,6 +64,23 @@ public class PartieClient {
 		listeFinale.add(t);	
 		return listeFinale;
 	}
+	
+	private Object recevoirObjet() {
+		Object O=new Object();
+		try {
+			O =client.in.readObject();					
+		} catch (IOException | ClassNotFoundException e) {
+	           e.printStackTrace();	
+		}
+		return O;
+	};
+	
+	private void envoyer () {
+		envoyerObjet(Plateau.plateau); 
+		envoyerObjet(scoreJoueur1);			
+		envoyerObjet(chevalet.getJetonsAChanger());
+	}
+	
 	
 	private void envoyerObjet(Object objetEnvoyé) {
 		try { 		
@@ -82,7 +101,9 @@ public class PartieClient {
     	if (chevalet.coup.size()!=0)chevalet.videCoup();                  
         grille.remplirCases(Plateau.plateau);      
         scoreServeur=(int) client.in.readObject();
-        grille.score2.setText(nomServeur + " : " + String.valueOf(scoreServeur)); 
+        grille.score2.setText(nomServeur + " : " + String.valueOf(scoreServeur));
+        int JetonsRestant=(int) client.in.readObject();
+        grille.jetonsRestant.setText("il reste " + JetonsRestant + " jetons");
         //il faut aussi envoyer le nombre de lettres restantes et l'état de la partie(si le serveur a gagné ou pas)
         joueurAjoué=false;    
         if (testVictoire()) finDePartie();
@@ -101,11 +122,11 @@ public class PartieClient {
 	     	if (joueurAjoué==true) {		     	
 	     	if (joueurAPassé)break;	
 	     	//extraction de la Array liste  de tableau de coups joués.
-	     	scoreJoueur1=scoreJoueur1+eval.scoreCoup(test(chevalet.coup));//il faudra ramplacer chavalet.coup par la Aray liste.
+	     	scoreJoueur1=scoreJoueur1+eval.scoreCoup(test(chevalet.coup));//il faudra remplacer chavalet.coup par la Aray liste.
 	     	miseAJourTableau();
 	     	grille.remplirCases(Plateau.plateau);//(pour enlever les couleurs)
-	     	grille.score1.setText(String.valueOf(nomJoueur1 +scoreJoueur1));
-	     	chevalet.coup.clear();
+	     	grille.score1.setText(nomJoueur1 + " : "+ String.valueOf(scoreJoueur1));
+	     	
 	     	break;
 	     	}
 	     }		

@@ -7,8 +7,22 @@ public String bonus,lettre;
 		this.colonne=colonne;
 		this.bonus=bonus;
 		this.lettre=lettre;
-		this.valeur=AffichageToValeur(lettre);
+		if (!this.lettre.equals(" "))   this.valeur=AffichageToValeur(lettre);
 	}
+	
+	CaseCourante(int ligne, int colonne, String bonus, String lettre,int i){
+		this.ligne=ligne;
+		this.colonne=colonne;
+		this.bonus=bonus;
+		this.lettre=lettre;
+		this.valeur=i;
+	}
+	
+	
+	
+	
+	
+	
 	
 	
 	public static String[] AffichageToLettre(String affichage) {
