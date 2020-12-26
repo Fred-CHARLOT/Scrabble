@@ -13,14 +13,14 @@ public class EvalCoup {
 		else return false;
 	}*/
 				
-	EvalCoup(ArrayList <CaseCourante[]> EnsMots) {
+	EvalCoup(ArrayList <CaseCourante[]> EnsMots) {  // c'est un test. Ici je pense qu'il faut supprimer le constructeur.
 		
 		this.mots=EnsMots;
 		
 	}
 	
 	
-	public static int SommeLettres (CaseCourante[] coup) {
+	public static int SommeLettres (CaseCourante[] coup) {   
 		
 			int somme = 0;
 			/*for (int k=0; k<coup.size();k++)*/
