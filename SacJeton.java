@@ -44,7 +44,7 @@ public class SacJeton {
 			for (int i=87;i<=88;i++) {sac.add(SacJeton.AffChev('F', 4));}
 			for (int i=89;i<=90;i++) {sac.add(SacJeton.AffChev('H', 4));}
 			for (int i=91;i<=92;i++) {sac.add(SacJeton.AffChev('V', 4));}
-			for (int i=93;i<=94;i++) {sac.add(" ");}
+			for (int i=93;i<=94;i++) {sac.add(SacJeton.AffChev(' ', 0));}
 			sac.add(SacJeton.AffChev('J', 8));
 			sac.add(SacJeton.AffChev('Q', 8));
 			sac.add(SacJeton.AffChev('K', 10));
