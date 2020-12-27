@@ -114,10 +114,31 @@ public String[] recupjetons(int n) { /* n est le nombre de jeton à remplacer */
 	}
 		
 		
-		
-		
-		
+public boolean débutdepartie() {
+	
+	Random tirage = new Random();
+	int b = tirage.nextInt(1);
+	return b==1; /* si b=1 le joueur 1 commence */
+}
+
+public String[] EchangeJetons(String[] jetons) {
+	/*assert this.sac_jeton.size()>=7;*/
+	int n = jetons.length; 
+	String[] b = new String[n];
+	b  = this.tirage(n); // nouvelles lettres
+	for (int i=0;i<n;i++) {
+		this.sac_jeton.add(jetons[i]); //remise des jetons échangés dans le sac
 	}
+	return b;
+}
+	
+
+}
+
+
+
+
+	
 	
 	
 	
