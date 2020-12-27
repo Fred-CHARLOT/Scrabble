@@ -4,10 +4,10 @@ import java.util.Random;
 public class SacJeton {
 	ArrayList <String> sac_jeton;
 	
-	
-	SacJeton (ArrayList <String> Sac) {
-		this.sac_jeton=Sac;
+	SacJeton () {
+		this.sac_jeton=SacJeton.Sac_Initial();
 	}
+
 	
 	
 	
@@ -132,12 +132,14 @@ public String[] EchangeJetons(String[] jetons) {
 	return b;
 }
 	
-/*public static void main(String[] Args) {
+public static void main(String[] Args) {
 	
-	SacJeton.AffichageToLettre("<html><font size = 7><b>" + "K"   +  "</b></font>"  + "<font size = 4><sub>" + " "  + "10" + "</sub></font></html>");
+	SacJeton sac = new SacJeton();
+    String reglette []=sac.tirage(7);
+    Chevalet chevalet = new Chevalet(0,reglette);
 	
 	
-}*/
+}
 
 
 
