@@ -15,8 +15,8 @@ public class SacJeton {
 		
 		String c = Character. toString(a);
 		String d = Integer. toString(b);
-		return "<html>"+c+"  "+"<font size = 5><sub>"+d+"</sub></font><br /></html>";
-			
+		
+		return "<html><font size = 7><b>" + c   +  "</b></font>"  + "<font size = 4><sub>" + " "  + d + "</sub></font></html>";
 	}
 	
 	
@@ -93,13 +93,13 @@ public class SacJeton {
 	}
 	
 	public static String[] AffichageToLettre(String affichage) {
-		/*"<html>A  <font size = 5><sub>1</sub></font><br /></html>"*/
 		
+		/*"<html><font size = 7><b>" + c   +  "</b></font>"  + "<font size = 4><sub>" + " "  + d + "</sub></font></html>";*/
 		String[] a = new String[2];
-		a[0]= Character. toString(affichage.charAt(6));
-		a[1]=Character. toString(affichage.charAt(29));
-		if (affichage.charAt(30)!='<') {a[1]=a[1]+Character. toString(affichage.charAt(30));}
-		System.out.println(a[0]+" "+a[1]);
+		a[0]= Character. toString(affichage.charAt(24));
+		a[1]=Character. toString(affichage.charAt(57));
+		if (affichage.charAt(58)!='<') {a[1]=a[1]+Character. toString(affichage.charAt(58));}
+		System.out.print(a[0]+" "+a[1]);
 		
 		return a;
 	}	
@@ -132,6 +132,14 @@ public String[] EchangeJetons(String[] jetons) {
 	return b;
 }
 	
+/*public static void main(String[] Args) {
+	
+	SacJeton.AffichageToLettre("<html><font size = 7><b>" + "K"   +  "</b></font>"  + "<font size = 4><sub>" + " "  + "10" + "</sub></font></html>");
+	
+	
+}*/
+
+
 
 }
 
