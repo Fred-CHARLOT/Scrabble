@@ -114,13 +114,17 @@ public class EvalCoup {
 	}
 	
 	
-	public static int ScoreFinal(int score, CaseCourante[] chevalet) {
+	public static int ScoreFinalMoins(int score, CaseCourante[] chevalet) {
 		
 		score=score - SommeLettres(chevalet);
 		return score;
 	}
 	
-	
+public static int ScoreFinalPlus(int score, CaseCourante[] chevalet) {
+		
+		score=score + SommeLettres(chevalet); /* somme des lettres de l'autre joueur*/
+		return score;
+	}
 	
 		
 		}
