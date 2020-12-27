@@ -6,6 +6,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -24,31 +25,18 @@ public class GestionGrille  implements ActionListener {
 	Chevalet chevalet;
 	JButton score2;
 	JButton score1,jetonsRestant;
-//Constructeurs	
-	GestionGrille (int serveurOuclient,Chevalet chevalet){   
+
+	//Constructeur	
+		GestionGrille (int serveurOuclient,Chevalet chevalet){   
 		this.chevalet=chevalet;	
 		affichage(serveurOuclient);
+		//ImageIcon image = new ImageIcon("etoile.png");
+		//cases[0][1].setIcon(image);
 			
-		}
-	
-	
-	
-	//Cas où on veut transmettre la partie
-/*	
-	GestionGrille (int serveurOuclient,PartieClient partie){
-		partieClient=partie;	
-		affichage(serveurOuclient);
-			
-		}
-	
-	GestionGrille (int serveurOuclient,Partie partie){
-	this.partie=partie;	
-	affichage(serveurOuclient);
 		
-	}
+		}
 	
-	*/
-	
+		
 	public void affichage(int serveurOuclient) {
 		cases = new JButton [15][15];
 		if (serveurOuclient==0) fenetre1=new JFrame("Scrabble Serveur by Houssem, Fred & JB ");	
@@ -93,7 +81,7 @@ public class GestionGrille  implements ActionListener {
 				cases[ligne][colonne].addActionListener(this);
 			}			
 		}	
-		
+			
 	}
 	
 	
@@ -114,32 +102,27 @@ public class GestionGrille  implements ActionListener {
 				for (int colonne=0;colonne<15; colonne++) {	
 					if (leBouton==cases[ligne][colonne])  {							
 						if ((chevalet.caseCourante!=7)&& caseLibre(ligne,colonne)) { //on a cliqué sur une lettre du chevalet							
-							if ((ligne==7)&&(colonne==7))fontCaseCentrale(15); //gestion de la taille de la police de la case centrale
-							
-							if (chevalet.cases[chevalet.caseCourante].getText().equals(" ")) {
-								blanc =JOptionPane.showInputDialog("Quelle lettre veux tu mettre?");
-								chevalet.coup.add(new CaseCourante(ligne, colonne, cases[ligne][colonne].getText(),blanc, 0));
-								chevalet.coup.get(chevalet.coup.size()-1).valeur=0;
-								cases[ligne][colonne].setText(blanc);
-							}
-							else {
-							cases[ligne][colonne].setText(chevalet.cases[chevalet.caseCourante].getText() );							
+							if ((ligne==7)&&(colonne==7))fontCaseCentrale(15); //gestion de la taille de la police de la case centrale							
 							chevalet.coup.add(new CaseCourante(ligne, colonne, cases[ligne][colonne].getText(),chevalet.cases[chevalet.caseCourante].getText()));
-							}
-						chevalet.cases[chevalet.caseCourante].setText("");chevalet.cases[chevalet.caseCourante].setBackground(null);
+							cases[ligne][colonne].setText(chevalet.cases[chevalet.caseCourante].getText() );
+							if (chevalet.coup.get(chevalet.coup.size()-1).valeur==0) {
+								blanc =JOptionPane.showInputDialog("Quelle lettre veux tu mettre?");
+								cases[ligne][colonne].setText(blanc);
+							}							
+						chevalet.cases[chevalet.caseCourante].setText("");
+						chevalet.cases[chevalet.caseCourante].setBackground(null);
 						chevalet.reglette[chevalet.caseCourante]="";
 						chevalet.caseCourante=7;
 						
 					}
 						else if ((chevalet.caseCourante==7)&& !caseLibre(ligne,colonne)) { //on n'a pas cliqué sur une lettre du chevalet
 						int position = 	retrouveCase(ligne,colonne);				//est ce un coup courant et si oui en quelle position
-						if (position ==-1) break;  //si c'est un coup joué un tour précédent
+						if (position ==-1) break;  // c'est un coup joué un tour précédent
 							for (int i=0; i<7;i++) { //si c'est un coup courant, on va remettre la lettre dans le chevalet
-								if (chevalet.cases[i].getText().equals("")){ /// à la premiere case vide
-									
+								if (chevalet.cases[i].getText().equals("")){ /// à la premiere case vide									
 									if (chevalet.coup.get(position).valeur==0) {//cas d'un joker
-										chevalet.reglette[i]=" ";
-										chevalet.cases[i].setText(" ");
+										chevalet.reglette[i]=chevalet.coup.get(position).lettre;
+										chevalet.cases[i].setText(chevalet.coup.get(position).lettre);
 									}
 									else {			
 										chevalet.reglette[i]=cases[ligne][colonne].getText();//on met dans la reglette
@@ -147,7 +130,7 @@ public class GestionGrille  implements ActionListener {
 									}
 									
 									if ((ligne==7)&&(colonne==7))fontCaseCentrale(50);    // gerer le probleme de la police de la case centrale
-									cases[ligne][colonne].setText(chevalet.coup.get(position).bonus);//on met sur la grille
+									cases[ligne][colonne].setText(chevalet.coup.get(position).bonus);//on met sur la grille									
 									chevalet.coup.remove(retrouveCase(ligne, colonne));//on efface le coup de la lise de coups courants
 									break;
 								} 
@@ -161,7 +144,13 @@ public class GestionGrille  implements ActionListener {
 		}
 		//
 		
-	
+	public int caseVideChevalet() {
+		int i;
+		for (i=0; i<7;i++) {
+			if (chevalet.cases[i].getText().equals(""))break;
+		}
+		return i;
+	}
 
 boolean caseLibre(int ligne, int colonne) { 
 	return (cases[ligne][colonne].getText().equals("") || isBonus(ligne,colonne));

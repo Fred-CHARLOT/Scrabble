@@ -11,9 +11,11 @@ public class PartieClient {
 	boolean partieEnCours;		
 	static boolean joueurAjoué;
 	static boolean joueurAPassé;
+	static boolean joueurAChangé;
 	final boolean OnAttendQueLeJoueurJoue=true;
 	static int scoreJoueur1=0;
 	static int scoreServeur=0;
+	private int tirage;
 	public String nomServeur, nomJoueur1="JB";
 	Chevalet chevalet;
 	GestionGrille grille; 
@@ -41,13 +43,15 @@ public class PartieClient {
 	
 	public void deroulement() {
 		partieEnCours =true;			 
+		tirage=(int)recevoirObjet();
+		if (tirage==1)premierTour();
+		
 		while (partieEnCours == true) {	    				
 			ilJoue() ;		
 			//tester si c'est la fin de la partie
+			
 			jeJoue();			 
-			envoyer();
-			chevalet.coup.clear();
-			chevalet.majReglette((String [])recevoirObjet());
+			
 			//tester si c'est la fin de la partie
 			
 		
@@ -91,7 +95,12 @@ public class PartieClient {
 		}
 	}
 	
-	
+	private void premierTour() {		
+		jeJoue();			 
+		envoyer();
+		chevalet.coup.clear();
+		chevalet.majReglette((String [])recevoirObjet());	
+	}
 	
 	
 	private void ilJoue() {
@@ -104,7 +113,7 @@ public class PartieClient {
         grille.score2.setText(nomServeur + " : " + String.valueOf(scoreServeur));
         int JetonsRestant=(int) client.in.readObject();
         grille.jetonsRestant.setText("il reste " + JetonsRestant + " jetons");
-        //il faut aussi envoyer le nombre de lettres restantes et l'état de la partie(si le serveur a gagné ou pas)
+        //il faut aussi envoyer  l'état de la partie(si le serveur a gagné ou pas)
         joueurAjoué=false;    
         if (testVictoire()) finDePartie();
 		} catch (IOException | ClassNotFoundException e) {
@@ -121,16 +130,33 @@ public class PartieClient {
 		chevalet.valider.setBackground(Color.green);		   
 	     	if (joueurAjoué==true) {		     	
 	     	if (joueurAPassé)break;	
+	     	if (joueurAChangé){changeJetons();break;}
 	     	//extraction de la Array liste  de tableau de coups joués.
 	     	scoreJoueur1=scoreJoueur1+eval.scoreCoup(test(chevalet.coup));//il faudra remplacer chavalet.coup par la Aray liste.
 	     	miseAJourTableau();
 	     	grille.remplirCases(Plateau.plateau);//(pour enlever les couleurs)
 	     	grille.score1.setText(nomJoueur1 + " : "+ String.valueOf(scoreJoueur1));
-	     	
+	     	envoyer();
+	     	chevalet.coup.clear();
+			chevalet.majReglette((String [])recevoirObjet());
 	     	break;
 	     	}
 	     }		
 	}
+	
+	void changeJetons() {
+		envoyerObjet(Plateau.plateau); 
+		envoyerObjet(scoreJoueur1);			
+		envoyerObjet(chevalet.echange.lettresAChanger);
+		reglette=(String[] )recevoirObjet();
+		chevalet.majReglette(reglette);		
+		joueurAChangé=false;
+	}
+	
+	
+	
+	
+	
 	
 	private boolean testVictoire() {
 		return (scoreJoueur1==15);
