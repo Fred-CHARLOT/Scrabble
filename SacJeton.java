@@ -20,7 +20,7 @@ public class SacJeton {
 	}
 	
 	
-	static ArrayList <String> Sac_Initial() {
+	final static ArrayList <String> Sac_Initial() {
 	
 	ArrayList <String> sac = new ArrayList<String>() ;
 	
