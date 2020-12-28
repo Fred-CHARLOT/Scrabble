@@ -99,10 +99,13 @@ public class SacJeton {
 		a[0]= Character. toString(affichage.charAt(24));
 		a[1]=Character. toString(affichage.charAt(57));
 		if (affichage.charAt(58)!='<') {a[1]=a[1]+Character. toString(affichage.charAt(58));}
-		System.out.print(a[0]+" "+a[1]);
+		/*System.out.print(a[0]+" "+a[1]);*/
 		
 		return a;
 	}	
+	
+	
+	
 	
 	
 public String[] recupjetons(int n) { /* n est le nombre de jeton à remplacer */
@@ -118,7 +121,7 @@ public boolean débutdepartie() {
 	
 	Random tirage = new Random();
 	int b = tirage.nextInt(1);
-	return b==1; /* si b=1 le joueur 1 commence */
+	return b==1; /* si b=1 le joueur 1 commence ? */
 }
 
 public String[] EchangeJetons(String[] jetons) {
@@ -131,13 +134,51 @@ public String[] EchangeJetons(String[] jetons) {
 	}
 	return b;
 }
+
+
+
+
+public static int SommeResteChevalet(String[] ResteChevalet) { //pour le joueur à qui il reste des lettres
+	int a = 0;
+	for (int i=0;i<ResteChevalet.length;i++) {
+		if (ResteChevalet[i]!="") {
+			a=a+Integer.parseInt((AffichageToLettre(ResteChevalet[i]))[1]);
+		}
+	}
 	
+	return a;
+}
+
+public static int ScoreFinalMoins (int score, int sommeResteChevalet) {//pour le joueur à qui il reste des lettres
+	return score - sommeResteChevalet;
+}
+
+public static int ScoreFinalPlus(int score, int sommeResteChevaletAutre) {//pour le joueur qui a posé tous ses jetons
+	return score+sommeResteChevaletAutre;
+}
+
+
+
 public static void main(String[] Args) {
 	
-	SacJeton sac = new SacJeton();
+	/*SacJeton sac = new SacJeton();
     String reglette []=sac.tirage(7);
-    Chevalet chevalet = new Chevalet(0,reglette);
+    Chevalet chevalet = new Chevalet(0,reglette);*/
+	String[] regle = new String[7];
+	regle[0]="";
+	regle[1]=AffChev('Q',8);
+	regle[2]=AffChev('K',10);
+	regle[3]="";
+	regle[4]="";
+	regle[5]=AffChev('P',3);
+	regle[6]="";
+	System.out.println(SommeResteChevalet(regle));
+	System.out.println(ScoreFinalMoins(300,SommeResteChevalet(regle)));
+	System.out.println(ScoreFinalPlus(350,SommeResteChevalet(regle)));
 	
+	
+    
+    
 	
 }
 
