@@ -41,7 +41,7 @@ public class GestionGrille  implements ActionListener {
 		cases = new JButton [15][15];
 		if (serveurOuclient==0) fenetre1=new JFrame("Scrabble Serveur by Houssem, Fred & JB ");	
 		else fenetre1=new JFrame("Scrabble Client by Houssem, Fred & JB " +chevalet.caseCourante);	
-		fenetre1.setSize(1100, 750) ;
+		fenetre1.setSize(1200, 750) ;
 		fenetre1.setLocationRelativeTo(null);//pour centrer la fenetre
 		fenetre1.setVisible(true);
 		fenetre1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
@@ -108,6 +108,7 @@ public class GestionGrille  implements ActionListener {
 							if (chevalet.coup.get(chevalet.coup.size()-1).valeur==0) {
 								blanc =JOptionPane.showInputDialog("Quelle lettre veux tu mettre?");
 								cases[ligne][colonne].setText(blanc);
+								chevalet.coup.get(chevalet.coup.size()-1).lettre=blanc;
 							}							
 						chevalet.cases[chevalet.caseCourante].setText("");
 						chevalet.cases[chevalet.caseCourante].setBackground(null);

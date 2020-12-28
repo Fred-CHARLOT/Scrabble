@@ -35,8 +35,8 @@ public String bonus,lettre;
 
 	
 	public static String AffichageToValeurString(String affichage) {
-		String a=Character. toString(affichage.charAt(29));
-		if (affichage.charAt(30)!='<') {a=a+Character. toString(affichage.charAt(30));}	
+		String a=Character. toString(affichage.charAt(57));
+		if (affichage.charAt(58)!='<') {a=a+Character. toString(affichage.charAt(58));}	
 		return a;
 	}
 	

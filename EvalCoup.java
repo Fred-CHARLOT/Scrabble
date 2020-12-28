@@ -75,7 +75,9 @@ public class EvalCoup {
 		return score;
 	}
 	
-	
+public  int scoreFinal(int score, String [] reglette) {
+		return score;
+	}
 	
 		
 		}

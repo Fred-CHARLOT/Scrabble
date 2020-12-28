@@ -16,6 +16,7 @@ public class PartieClient {
 	static int scoreJoueur1=0;
 	static int scoreServeur=0;
 	private int tirage;
+	int JetonsRestant;
 	public String nomServeur, nomJoueur1="JB";
 	Chevalet chevalet;
 	GestionGrille grille; 
@@ -81,8 +82,10 @@ public class PartieClient {
 	
 	private void envoyer () {
 		envoyerObjet(Plateau.plateau); 
-		envoyerObjet(scoreJoueur1);			
+		envoyerObjet(scoreJoueur1);	
+		envoyerObjet(joueurAfini());		
 		envoyerObjet(chevalet.getJetonsAChanger());
+		
 	}
 	
 	
@@ -111,7 +114,7 @@ public class PartieClient {
         grille.remplirCases(Plateau.plateau);      
         scoreServeur=(int) client.in.readObject();
         grille.score2.setText(nomServeur + " : " + String.valueOf(scoreServeur));
-        int JetonsRestant=(int) client.in.readObject();
+        JetonsRestant=(int) client.in.readObject();
         grille.jetonsRestant.setText("il reste " + JetonsRestant + " jetons");
         //il faut aussi envoyer  l'état de la partie(si le serveur a gagné ou pas)
         joueurAjoué=false;    
@@ -129,6 +132,7 @@ public class PartieClient {
 		while (OnAttendQueLeJoueurJoue) {	     		  
 		chevalet.valider.setBackground(Color.green);		   
 	     	if (joueurAjoué==true) {		     	
+	     	envoyerObjet(joueurAChangé);
 	     	if (joueurAPassé)break;	
 	     	if (joueurAChangé){changeJetons();break;}
 	     	//extraction de la Array liste  de tableau de coups joués.
@@ -144,18 +148,20 @@ public class PartieClient {
 	     }		
 	}
 	
-	void changeJetons() {
+	void changeJetons() {				
 		envoyerObjet(Plateau.plateau); 
 		envoyerObjet(scoreJoueur1);			
-		envoyerObjet(chevalet.echange.lettresAChanger);
-		reglette=(String[] )recevoirObjet();
+		envoyerObjet((String[])chevalet.echange.lettresAChanger);		
+		reglette=(String[] )recevoirObjet();		
 		chevalet.majReglette(reglette);		
 		joueurAChangé=false;
 	}
 	
 	
 	
-	
+	private boolean joueurAfini() {
+		return ((JetonsRestant==0)&& chevalet.reglette.length==0);
+	}
 	
 	
 	private boolean testVictoire() {

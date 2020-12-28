@@ -34,7 +34,7 @@ public class Chevalet  implements ActionListener {
 		this.reglette=reglette;
 		if ( serveurOuClient==0) fenetre1=new JFrame("Scrabble Serveur by Houssem, Fred and JB");	
 		else fenetre1=new JFrame("Scrabble Client by Houssem, Fred and JB");
-		fenetre1.setSize(800, 100) ;
+		fenetre1.setSize(800, 130) ;
 		fenetre1.setLocationRelativeTo(null);//pour centrer la fenetre
 		fenetre1.setVisible(true);
 		fenetre1.setAlwaysOnTop(true);
@@ -125,15 +125,16 @@ public class Chevalet  implements ActionListener {
 		
 		
 		
-		if ((leBouton==échanger)&& (Partie.joueurAjoué==false)&& (serveurOuClient==0)) {		
+		if ((leBouton==échanger)&& (Partie.joueurAjoué==false)) {		
 		videCoup();
 		echange.setVisible(true);
 		valider.setEnabled(false);
-		passer.setEnabled(false);
-		
-	
-		///Partie.compteur=0; uniquement si l'échange  a vraiment lieu
+		passer.setEnabled(false);	
+		valider.setBackground(null);
 		}
+		
+		
+		
 		
 		if (leBouton==permuter) {				
 			this.reglette=modifAleat();
