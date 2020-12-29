@@ -83,7 +83,7 @@ String lettresAChanger [];
 					cases[i].setText("");
 				}
 			}
-			                           
+			for (int i=0;i<lettresAChanger.length;i++) System.out.println(lettresAChanger[i]);                          
 			if (chevalet.serveurOuClient==0) {Partie.joueurAjoue=true;Partie.joueurAchange=true;}
 			else {PartieClient.joueurAjoue=true;PartieClient.joueurAChange=true;}
 			chevalet.valider.setBackground(null);
@@ -110,7 +110,7 @@ String lettresAChanger [];
 	
 	public int isNotVide() {
 		int count=0;
-		for (int i=0;i<7;i++) {if (!cases[i].getText().equals(""))count++;}
+		for (int i=0;i<7;i++) {if (!cases[i].getText().equals(""))count++;}		
 		return count;
 	}
 	
