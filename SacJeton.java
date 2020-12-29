@@ -57,7 +57,7 @@ public class SacJeton {
 			return sac;
 		}
 	
-	public void Sac_décalage(int a) {
+	public void Sac_decalage(int a) {
 				
 		int d = (this.sac_jeton).size();
 		
@@ -76,7 +76,7 @@ public class SacJeton {
 				Random tirage= new Random();
 				int b = tirage.nextInt(d);
 				a[k] = (this.sac_jeton).get(b); 
-				this.Sac_décalage(b);
+				this.Sac_decalage(b);
 				d=d-1;
 			}
 		
@@ -117,7 +117,7 @@ public String[] recupjetons(int n) { /* n est le nombre de jeton à remplacer */
 	}
 		
 		
-public boolean débutdepartie() {
+public boolean debutdepartie() {
 	
 	Random tirage = new Random();
 	int b = tirage.nextInt(1);
@@ -149,12 +149,12 @@ public static int SommeResteChevalet(String[] ResteChevalet) { //pour le joueur 
 	return a;
 }
 
-public static int ScoreFinalMoins (int score, int sommeResteChevalet) {//pour le joueur à qui il reste des lettres
-	return score - sommeResteChevalet;
+public static int ScoreFinalMoins (int score, String[] ResteChevalet) {//pour le joueur à qui il reste des lettres
+	return score - SommeResteChevalet(ResteChevalet);
 }
 
-public static int ScoreFinalPlus(int score, int sommeResteChevaletAutre) {//pour le joueur qui a posé tous ses jetons
-	return score+sommeResteChevaletAutre;
+public static int ScoreFinalPlus(int score, String[] ResteChevaletAutre) {//pour le joueur qui a posé tous ses jetons
+	return score+SommeResteChevalet(ResteChevaletAutre);
 }
 
 
@@ -173,8 +173,8 @@ public static void main(String[] Args) {
 	regle[5]=AffChev('P',3);
 	regle[6]="";
 	System.out.println(SommeResteChevalet(regle));
-	System.out.println(ScoreFinalMoins(300,SommeResteChevalet(regle)));
-	System.out.println(ScoreFinalPlus(350,SommeResteChevalet(regle)));
+	System.out.println(ScoreFinalMoins(300,regle));
+	System.out.println(ScoreFinalPlus(350,regle));
 	
 	
     
