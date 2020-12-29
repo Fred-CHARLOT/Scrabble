@@ -110,7 +110,7 @@ public class SacJeton {
 	
 public String[] recupjetons(int n) { /* n est le nombre de jeton à remplacer */
 		/*if ((this.sac_jeton).size()==0) system.out.println("le sac est vide");*/
-		n=((this.sac_jeton).size()<=n)?n:(this.sac_jeton).size();
+		n=((this.sac_jeton).size()>=n)?n:(this.sac_jeton).size();
 		String[] b = new String[n];
 		b  = this.tirage(n);
 		return b;
