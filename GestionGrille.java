@@ -6,8 +6,10 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 
@@ -17,42 +19,32 @@ public class GestionGrille  implements ActionListener {
 	JPanel panneau1;
 	GridLayout disposition1;
 	int serveurOuClient;
-	PartieClient partieClient;
-	Partie partie;
+	String blanc;
+	//PartieClient partieClient;
+	//Partie partie;
 	Chevalet chevalet;
-	
-//Constructeurs	
-	GestionGrille (int serveurOuclient,Chevalet chevalet){   
+	JButton score2;
+	JButton score1,jetonsRestant;
+
+	//Constructeur	
+		GestionGrille (int serveurOuclient,Chevalet chevalet){   
 		this.chevalet=chevalet;	
 		affichage(serveurOuclient);
+		//ImageIcon image = new ImageIcon("etoile.png");
+		//cases[0][1].setIcon(image);
 			
-		}
-	
-	
-	
-	//Cas où on veut transmettre la partie
-/*	
-	GestionGrille (int serveurOuclient,PartieClient partie){
-		partieClient=partie;	
-		affichage(serveurOuclient);
-			
-		}
-	
-	GestionGrille (int serveurOuclient,Partie partie){
-	this.partie=partie;	
-	affichage(serveurOuclient);
 		
-	}
+		}
 	
-	*/
-	
+		
 	public void affichage(int serveurOuclient) {
 		cases = new JButton [15][15];
 		if (serveurOuclient==0) fenetre1=new JFrame("Scrabble Serveur by Houssem, Fred & JB ");	
-		else fenetre1=new JFrame("Scrabble Client by Houssem, Fred & JB ");	
-		fenetre1.setSize(850, 750) ;
+		else fenetre1=new JFrame("Scrabble Client by Houssem, Fred & JB " +chevalet.caseCourante);	
+		fenetre1.setSize(1200, 750) ;
 		fenetre1.setLocationRelativeTo(null);//pour centrer la fenetre
 		fenetre1.setVisible(true);
+		fenetre1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
 		
 		//Grille
 		panneau1 = new JPanel();
@@ -61,17 +53,19 @@ public class GestionGrille  implements ActionListener {
 		fenetre1.add(panneau1);
 		
 		
+		
 		//Scores
 		JPanel panneau3 = new JPanel();
-		GridLayout disposition3 = new GridLayout(1, 2); 
+		GridLayout disposition3 = new GridLayout(1, 3); 
 		panneau3.setLayout(disposition3);
-		panneau3.setSize(850, 1000);
+		panneau3.setSize(850, 750);
 		fenetre1.add("North",panneau3);
-				JButton score1 = new JButton("Joueur 1 : 230");
-		JButton score2 = new JButton("Joueur 2 : 145");
-		panneau3.add(score1);
-		panneau3.add(score2);
-				
+		score1 = new JButton("0");
+		jetonsRestant=new JButton("il reste : 88 jetons");
+		score2 = new JButton("0");
+		panneau3.add(score1);		
+		panneau3.add(jetonsRestant);
+		panneau3.add(score2);		
 		tableauBoutons();
 		
 		remplirCases(Plateau.plateau);
@@ -80,14 +74,14 @@ public class GestionGrille  implements ActionListener {
 	
 	
 	public void tableauBoutons() {
-		for ( int ligne=0  ; ligne< 15;ligne++) {
+			for ( int ligne=0  ; ligne< 15;ligne++) {
 			for (int colonne=0;colonne<15; colonne++) {
 				cases[ligne][colonne]= new JButton();
 				panneau1.add(cases[ligne][colonne]);
 				cases[ligne][colonne].addActionListener(this);
 			}			
 		}	
-		
+			
 	}
 	
 	
@@ -98,7 +92,7 @@ public class GestionGrille  implements ActionListener {
 	}
 	
 	
-		
+	//
 	
 		public void actionPerformed(ActionEvent événement)  { /// EVENENEMENT
 		 
@@ -107,35 +101,58 @@ public class GestionGrille  implements ActionListener {
 				for ( int ligne=0  ; ligne< 15;ligne++) {
 				for (int colonne=0;colonne<15; colonne++) {	
 					if (leBouton==cases[ligne][colonne])  {							
-						if ((chevalet.caseCourante!=7)&& caseLibre(ligne,colonne)) { //on a cliqué sur une lettre du chevalet	
-						if ((ligne==7)&&(colonne==7))fontCaseCentrale(15); //gestion de la taille de la police de la case centrale
-						chevalet.coup.add(new CaseCourante(ligne, colonne, cases[ligne][colonne].getText(),chevalet.cases[chevalet.caseCourante].getText()));	
-						cases[ligne][colonne].setText(chevalet.cases[chevalet.caseCourante].getText() );							
-						chevalet.cases[chevalet.caseCourante].setText("");chevalet.cases[chevalet.caseCourante].setBackground(null);
+						if ((chevalet.caseCourante!=7)&& caseLibre(ligne,colonne)) { //on a cliqué sur une lettre du chevalet							
+							if ((ligne==7)&&(colonne==7))fontCaseCentrale(15); //gestion de la taille de la police de la case centrale							
+							chevalet.coup.add(new CaseCourante(ligne, colonne, cases[ligne][colonne].getText(),chevalet.cases[chevalet.caseCourante].getText()));
+							cases[ligne][colonne].setText(chevalet.cases[chevalet.caseCourante].getText() );
+							if (chevalet.coup.get(chevalet.coup.size()-1).valeur==0) {
+								blanc =JOptionPane.showInputDialog("Quelle lettre veux tu mettre?");
+								cases[ligne][colonne].setText(SacJeton.AffChev(blanc.charAt(0), 0));
+								chevalet.coup.get(chevalet.coup.size()-1).lettre=blanc;
+								chevalet.coup.get(chevalet.coup.size()-1).affichage=SacJeton.AffChev(blanc.charAt(0), 0); 
+							}							
+						chevalet.cases[chevalet.caseCourante].setText("");
+						chevalet.cases[chevalet.caseCourante].setBackground(null);
+						chevalet.reglette[chevalet.caseCourante]="";
 						chevalet.caseCourante=7;
 						
-						}
+					}
 						else if ((chevalet.caseCourante==7)&& !caseLibre(ligne,colonne)) { //on n'a pas cliqué sur une lettre du chevalet
 						int position = 	retrouveCase(ligne,colonne);				//est ce un coup courant et si oui en quelle position
-						if (position ==-1) break;  //si c'est un coup joué un tour précédent
-							for (int i=0; i<7;i++) { //si c'est un coup courant, on remet la lettre dans le chevalet
-								if (chevalet.cases[i].getText().equals("")){ /// à la premiere case vide
-									chevalet.cases[i].setText(cases[ligne][colonne].getText());   //  on met dans le chevalet
+						if (position ==-1) break;  // c'est un coup joué un tour précédent
+							for (int i=0; i<7;i++) { //si c'est un coup courant, on va remettre la lettre dans le chevalet
+								if (chevalet.cases[i].getText().equals("")){ /// à la premiere case vide									
+									if (chevalet.coup.get(position).valeur==0) {//cas d'un joker
+										chevalet.reglette[i]=SacJeton.AffChev(' ', 0); 										
+										chevalet.cases[i].setText(SacJeton.AffChev(' ', 0));
+									}
+									else {			
+										chevalet.reglette[i]=cases[ligne][colonne].getText();//on met dans la reglette
+										chevalet.cases[i].setText(cases[ligne][colonne].getText());   //  on met dans le chevalet
+									}
+									
 									if ((ligne==7)&&(colonne==7))fontCaseCentrale(50);    // gerer le probleme de la police de la case centrale
-									cases[ligne][colonne].setText(chevalet.coup.get(position).bonus);//on met sur la grille
+									cases[ligne][colonne].setText(chevalet.coup.get(position).bonus);//on met sur la grille									
 									chevalet.coup.remove(retrouveCase(ligne, colonne));//on efface le coup de la lise de coups courants
 									break;
-								}
+								} 
 							}
 						}
-					}
+						}
+					
 				}	
 				}
 				
 		}
 		//
 		
-	
+	public int caseVideChevalet() {
+		int i;
+		for (i=0; i<7;i++) {
+			if (chevalet.cases[i].getText().equals(""))break;
+		}
+		return i;
+	}
 
 boolean caseLibre(int ligne, int colonne) { 
 	return (cases[ligne][colonne].getText().equals("") || isBonus(ligne,colonne));
@@ -154,7 +171,7 @@ int retrouveCase(int ligne, int colonne) {
 	 return -1;
 }
 	
-void remplirCases(String plateau[][]) {
+void remplirCases(String plateau[][]) {			
 			if (plateau[7][7].equals("*"))fontCaseCentrale(50); else fontCaseCentrale(15);
 			for (int i=0; i<15 ; i++){
 			for (int j=0; j<15; j++){				
