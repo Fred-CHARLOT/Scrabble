@@ -146,7 +146,7 @@ public String[] EchangeJetons(String[] jetons) {
 public static int SommeResteChevalet(String[] ResteChevalet) { //pour le joueur à qui il reste des lettres
 	int a = 0;
 	for (int i=0;i<ResteChevalet.length;i++) {
-		if (ResteChevalet[i]!="") {
+		if (!ResteChevalet[i].equals("")) {
 			a=a+Integer.parseInt((AffichageToLettre(ResteChevalet[i]))[1]);
 		}
 	}
