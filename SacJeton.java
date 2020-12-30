@@ -68,6 +68,9 @@ public class SacJeton {
 		
 	public String[] tirage(int x) {
 		int d = (this.sac_jeton).size();
+		
+		if(d==0) {String a [] = new String [0];return a;}
+		
 		String[] a = new String[x];
 		if (x>d) x=d;
 		
@@ -95,14 +98,16 @@ public class SacJeton {
 	public static String[] AffichageToLettre(String affichage) {
 		
 		/*"<html><font size = 7><b>" + c   +  "</b></font>"  + "<font size = 4><sub>" + " "  + d + "</sub></font></html>";*/
-		String[] a = new String[2];
-		a[0]= Character. toString(affichage.charAt(24));
-		a[1]=Character. toString(affichage.charAt(57));
-		if (affichage.charAt(58)!='<') {a[1]=a[1]+Character. toString(affichage.charAt(58));}
-		/*System.out.print(a[0]+" "+a[1]);*/
+			String[] a = new String[2];
+			a[0]= Character. toString(affichage.charAt(24));
+			a[1]=Character. toString(affichage.charAt(57));
+			if (affichage.charAt(58)!='<') {a[1]=a[1]+Character. toString(affichage.charAt(58));}
+			return a;
 		
-		return a;
-	}	
+		/*System.out.print(a[0]+" "+a[1]);*/
+		}
+		
+		
 	
 	
 	
