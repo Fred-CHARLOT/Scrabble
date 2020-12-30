@@ -11,13 +11,17 @@ public class SacJeton {
 	
 	
 	
-	public static String AffChev(char a, int b) {
+	public static String AffChev(char a, int b) {  //static obligatoire ici
 		
 		String c = Character. toString(a);
 		String d = Integer. toString(b);
 		
 		return "<html><font size = 7><b>" + c   +  "</b></font>"  + "<font size = 4><sub>" + " "  + d + "</sub></font></html>";
 	}
+	
+	
+	
+	
 	
 	
 	final static ArrayList <String> Sac_Initial() {
@@ -27,7 +31,7 @@ public class SacJeton {
 		
 			for (int i=0;i<=14;i++) {sac.add(SacJeton.AffChev('E', 1));}
 			for (int i=15;i<=23;i++){sac.add(SacJeton.AffChev('A', 1));}
-			for (int i=24;i<=31;i++) {sac.add(SacJeton.AffChev('I', 1));}
+			/*for (int i=24;i<=31;i++) {sac.add(SacJeton.AffChev('I', 1));}
 			for (int i=32;i<=37;i++) {sac.add(SacJeton.AffChev('N', 1));}
 			for (int i=38;i<=43;i++) {sac.add(SacJeton.AffChev('O', 1));}
 			for (int i=44;i<=49;i++) {sac.add(SacJeton.AffChev('R', 1));}
@@ -45,7 +49,7 @@ public class SacJeton {
 			for (int i=89;i<=90;i++) {sac.add(SacJeton.AffChev('H', 4));}
 			for (int i=91;i<=92;i++) {sac.add(SacJeton.AffChev('V', 4));}
 			for (int i=93;i<=94;i++) {sac.add(SacJeton.AffChev(' ', 0));}
-			sac.add(SacJeton.AffChev('J', 8));
+			sac.add(SacJeton.AffChev('J', 8));*/
 			sac.add(SacJeton.AffChev('Q', 8));
 			sac.add(SacJeton.AffChev('K', 10));
 			sac.add(SacJeton.AffChev('W', 10));
@@ -53,11 +57,11 @@ public class SacJeton {
 			sac.add(SacJeton.AffChev('Y', 10));
 			sac.add(SacJeton.AffChev('Z', 10));
 		
-			for (int i=0;i<sac.size();i++) {System.out.println(sac.get(i));}
+			
 			return sac;
 		}
 	
-	public void Sac_decalage(int a) {
+	public void Sac_décalage(int a) {
 				
 		int d = (this.sac_jeton).size();
 		
@@ -68,18 +72,16 @@ public class SacJeton {
 		
 	public String[] tirage(int x) {
 		int d = (this.sac_jeton).size();
-		
 		if(d==0) {String a [] = new String [0];return a;}
 		
-		String[] a = new String[x];
 		if (x>d) x=d;
-		
+		String[] a = new String[x];
 		if (x >0) {
 			for (int k =0; k<x ; k++) {
 				Random tirage= new Random();
 				int b = tirage.nextInt(d);
 				a[k] = (this.sac_jeton).get(b); 
-				this.Sac_decalage(b);
+				this.Sac_décalage(b);
 				d=d-1;
 			}
 		
@@ -98,16 +100,14 @@ public class SacJeton {
 	public static String[] AffichageToLettre(String affichage) {
 		
 		/*"<html><font size = 7><b>" + c   +  "</b></font>"  + "<font size = 4><sub>" + " "  + d + "</sub></font></html>";*/
-			String[] a = new String[2];
-			a[0]= Character. toString(affichage.charAt(24));
-			a[1]=Character. toString(affichage.charAt(57));
-			if (affichage.charAt(58)!='<') {a[1]=a[1]+Character. toString(affichage.charAt(58));}
-			return a;
-		
+		String[] a = new String[2];
+		a[0]= Character. toString(affichage.charAt(24));
+		a[1]=Character. toString(affichage.charAt(57));
+		if (affichage.charAt(58)!='<') {a[1]=a[1]+Character. toString(affichage.charAt(58));}
 		/*System.out.print(a[0]+" "+a[1]);*/
-		}
 		
-		
+		return a;
+	}	
 	
 	
 	
@@ -115,7 +115,7 @@ public class SacJeton {
 	
 public String[] recupjetons(int n) { /* n est le nombre de jeton à remplacer */
 		/*if ((this.sac_jeton).size()==0) system.out.println("le sac est vide");*/
-		n=((this.sac_jeton).size()>=n)?n:(this.sac_jeton).size();
+		n=((this.sac_jeton).size()<=n)?(this.sac_jeton).size():n;
 		String[] b = new String[n];
 		b  = this.tirage(n);
 		return b;
@@ -129,7 +129,7 @@ public boolean debutdepartie() {
 	return b==1; /* si b=1 le joueur 1 commence ? */
 }
 
-public String[] EchangeJetons(String[] jetons) {
+public String[] echangeJetons(String[] jetons) {
 	/*assert this.sac_jeton.size()>=7;*/
 	int n = jetons.length; 
 	String[] b = new String[n];
@@ -143,10 +143,10 @@ public String[] EchangeJetons(String[] jetons) {
 
 
 
-public static int SommeResteChevalet(String[] ResteChevalet) { //pour le joueur à qui il reste des lettres
+public int sommeResteChevalet(String[] ResteChevalet) { //pour le joueur à qui il reste des lettres
 	int a = 0;
 	for (int i=0;i<ResteChevalet.length;i++) {
-		if (!ResteChevalet[i].equals("")) {
+		if ((!ResteChevalet[i].equals("")) &&(ResteChevalet[i]!=null)) {
 			a=a+Integer.parseInt((AffichageToLettre(ResteChevalet[i]))[1]);
 		}
 	}
@@ -154,51 +154,24 @@ public static int SommeResteChevalet(String[] ResteChevalet) { //pour le joueur 
 	return a;
 }
 
-public static int ScoreFinalMoins (int score, String[] ResteChevalet) {//pour le joueur à qui il reste des lettres
-	return score - SommeResteChevalet(ResteChevalet);
+public int scoreFinalMoins (int score, String[] resteChevalet) {//pour le joueur à qui il reste des lettres
+	if (resteChevalet.length==0) return 0;
+	return score - sommeResteChevalet(resteChevalet);
 }
 
-public static int ScoreFinalPlus(int score, String[] ResteChevaletAutre) {//pour le joueur qui a posé tous ses jetons
-	return score+SommeResteChevalet(ResteChevaletAutre);
+public int scoreFinalPlus(int score, String[] ResteChevaletAutre) {//pour le joueur qui a posé tous ses jetons
+	return score+sommeResteChevalet(ResteChevaletAutre);
 }
-
-
-
-public static void main(String[] Args) {
 	
-	/*SacJeton sac = new SacJeton();
-    String reglette []=sac.tirage(7);
-    Chevalet chevalet = new Chevalet(0,reglette);*/
-	String[] regle = new String[7];
-	regle[0]="";
-	regle[1]=AffChev('Q',8);
-	regle[2]=AffChev('K',10);
-	regle[3]="";
-	regle[4]="";
-	regle[5]=AffChev('P',3);
-	regle[6]="";
-	System.out.println(SommeResteChevalet(regle));
-	System.out.println(ScoreFinalMoins(300,regle));
-	System.out.println(ScoreFinalPlus(350,regle));
+/*public static void main(String[] Args) {
+	
+	SacJeton.AffichageToLettre("<html><font size = 7><b>" + "K"   +  "</b></font>"  + "<font size = 4><sub>" + " "  + "10" + "</sub></font></html>");
 	
 	
-    
-    
-	
-}
+}*/
 
 
 
 }
 
-
-
-
-	
-	
-	
-	
-	
-	
-	
 
