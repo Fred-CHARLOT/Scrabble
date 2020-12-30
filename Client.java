@@ -13,7 +13,7 @@ public class Client {
 		System.out.println("wait");
 			try {
 				
-		         clientSocket = new Socket("192.168.1.154",1800); //ip locale  + port ouvert
+		         clientSocket = new Socket("192.168.1.35",1800); //ip locale  + port ouvert
 		         out = new ObjectOutputStream(clientSocket.getOutputStream()); 
 		         out.flush();         
 		         in = new ObjectInputStream(clientSocket.getInputStream());	
