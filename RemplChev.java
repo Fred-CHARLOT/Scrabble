@@ -10,12 +10,6 @@ public class RemplChev {
 	String [] reglette = new String[7];
 	
 	
-	RemplChev(String[] reglette) {
-		
-		this.reglette=reglette;
-		
-		
-	}
 	
 		
 	String[] ModifAleat() {
