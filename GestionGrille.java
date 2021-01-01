@@ -12,30 +12,24 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-
 public class GestionGrille  implements ActionListener {
 	JButton cases [][];  //creation du tableau de bouttons
 	JFrame	fenetre1;
 	JPanel panneau1;
 	GridLayout disposition1;
 	int serveurOuClient;
-	String blanc;
-	//PartieClient partieClient;
-	//Partie partie;
+	String blanc;	
 	Chevalet chevalet;
 	JButton score2;
 	JButton score1,jetonsRestant;
 
-	//Constructeur	
-		GestionGrille (int serveurOuclient,Chevalet chevalet){   
+	
+	GestionGrille (int serveurOuclient,Chevalet chevalet){   
 		this.chevalet=chevalet;	
 		affichage(serveurOuclient);
 		//ImageIcon image = new ImageIcon("etoile.png");
 		//cases[0][1].setIcon(image);
-			
-		
-		}
-	
+	}
 		
 	public void affichage(int serveurOuclient) {
 		cases = new JButton [15][15];
@@ -51,9 +45,7 @@ public class GestionGrille  implements ActionListener {
 		disposition1 = new GridLayout(15, 15); 
 		panneau1.setLayout(disposition1);
 		fenetre1.add(panneau1);
-		
-		
-		
+				
 		//Scores
 		JPanel panneau3 = new JPanel();
 		GridLayout disposition3 = new GridLayout(1, 3); 
@@ -68,6 +60,7 @@ public class GestionGrille  implements ActionListener {
 		panneau3.add(score2);		
 		tableauBoutons();
 		
+		//plateau
 		remplirCases(Plateau.plateau);
 		
 	}
@@ -84,108 +77,120 @@ public class GestionGrille  implements ActionListener {
 			
 	}
 	
-	
-	
 	public void fontCaseCentrale(int i) {
 		Font font=new Font("Arial", Font.BOLD,i);
 		cases[7][7].setFont(font); 
 	}
 	
-	
-	//
-	
-		public void actionPerformed(ActionEvent événement)  { /// EVENENEMENT
-		 
-				JButton leBouton = (JButton) événement.getSource(); /// EVENENEMENT 
-				
-				for ( int ligne=0  ; ligne< 15;ligne++) {
-				for (int colonne=0;colonne<15; colonne++) {	
-					if (leBouton==cases[ligne][colonne])  {							
-						if ((chevalet.caseCourante!=7)&& caseLibre(ligne,colonne)) { //on a cliqué sur une lettre du chevalet							
-							if ((ligne==7)&&(colonne==7))fontCaseCentrale(15); //gestion de la taille de la police de la case centrale							
-							chevalet.coup.add(new CaseCourante(ligne, colonne, cases[ligne][colonne].getText(),chevalet.cases[chevalet.caseCourante].getText()));
-							cases[ligne][colonne].setText(chevalet.cases[chevalet.caseCourante].getText() );
-							if (chevalet.coup.get(chevalet.coup.size()-1).valeur==0) {
-								blanc =JOptionPane.showInputDialog("Quelle lettre veux tu mettre?");
-								cases[ligne][colonne].setText(SacJeton.AffChev(blanc.charAt(0), 0));
-								chevalet.coup.get(chevalet.coup.size()-1).lettre=blanc;
-								chevalet.coup.get(chevalet.coup.size()-1).affichage=SacJeton.AffChev(blanc.charAt(0), 0); 
-							}							
-						chevalet.cases[chevalet.caseCourante].setText("");
-						chevalet.cases[chevalet.caseCourante].setBackground(null);
-						chevalet.reglette[chevalet.caseCourante]="";
-						chevalet.caseCourante=7;
-						
-					}
-						else if ((chevalet.caseCourante==7)&& !caseLibre(ligne,colonne)) { //on n'a pas cliqué sur une lettre du chevalet
-						int position = 	retrouveCase(ligne,colonne);				//est ce un coup courant et si oui en quelle position
-						if (position ==-1) break;  // c'est un coup joué un tour précédent
-							for (int i=0; i<7;i++) { //si c'est un coup courant, on va remettre la lettre dans le chevalet
-								if (chevalet.cases[i].getText().equals("")){ /// à la premiere case vide									
-									if (chevalet.coup.get(position).valeur==0) {//cas d'un joker
-										chevalet.reglette[i]=SacJeton.AffChev(' ', 0); 										
-										chevalet.cases[i].setText(SacJeton.AffChev(' ', 0));
-									}
-									else {			
-										chevalet.reglette[i]=cases[ligne][colonne].getText();//on met dans la reglette
-										chevalet.cases[i].setText(cases[ligne][colonne].getText());   //  on met dans le chevalet
-									}
-									
-									if ((ligne==7)&&(colonne==7))fontCaseCentrale(50);    // gerer le probleme de la police de la case centrale
-									cases[ligne][colonne].setText(chevalet.coup.get(position).bonus);//on met sur la grille									
-									chevalet.coup.remove(retrouveCase(ligne, colonne));//on efface le coup de la lise de coups courants
-									break;
-								} 
-							}
-						}
-						}
-					
-				}	
-				}
-				
+	void remplirCases(String plateau[][]) {			
+		if (plateau[7][7].equals("*"))fontCaseCentrale(50); else fontCaseCentrale(15);
+		for (int i=0; i<15 ; i++){
+		for (int j=0; j<15; j++){				
+			this.cases[i][j].setText(plateau[i][j]);this.cases[i][j].setBackground(null);
+			if (plateau[i][j].equals("*")) {this.cases[i][j].setBackground(Color.pink);continue;}
+			if (plateau[i][j].equals("LT")) { this.cases[i][j].setBackground(Color.CYAN);continue;}
+			if (plateau[i][j].equals("LD")) {this.cases[i][j].setBackground(Color.yellow);continue;}
+			if (plateau[i][j].equals("MD")) { this.cases[i][j].setBackground(Color.pink);continue;}
+			if (plateau[i][j].equals("MT")) { this.cases[i][j].setBackground(Color.red);continue;}				
 		}
-		//
-		
-	public int caseVideChevalet() {
-		int i;
-		for (i=0; i<7;i++) {
-			if (chevalet.cases[i].getText().equals(""))break;
-		}
-		return i;
 	}
-
-boolean caseLibre(int ligne, int colonne) { 
-	return (cases[ligne][colonne].getText().equals("") || isBonus(ligne,colonne));
-}
-
-
- boolean isBonus(int ligne, int colonne) {
-	return (cases[ligne][colonne].getText().equals("MT")||cases[ligne][colonne].getText().equals("LT")||cases[ligne][colonne].getText().equals("LD")||cases[ligne][colonne].getText().equals("MD")
-			||cases[ligne][colonne].getText().equals("*"));
-}
-
-int retrouveCase(int ligne, int colonne) {
-	for (var i : chevalet.coup) {
-		if (i.ligne ==ligne && i.colonne ==colonne) return chevalet.coup.indexOf(i);	
-	}
-	 return -1;
-}
-	
-void remplirCases(String plateau[][]) {			
-			if (plateau[7][7].equals("*"))fontCaseCentrale(50); else fontCaseCentrale(15);
-			for (int i=0; i<15 ; i++){
-			for (int j=0; j<15; j++){				
-				this.cases[i][j].setText(plateau[i][j]);this.cases[i][j].setBackground(null);
-				if (plateau[i][j].equals("*")) {this.cases[i][j].setBackground(Color.pink);continue;}
-				if (plateau[i][j].equals("LT")) { this.cases[i][j].setBackground(Color.CYAN);continue;}
-				if (plateau[i][j].equals("LD")) {this.cases[i][j].setBackground(Color.yellow);continue;}
-				if (plateau[i][j].equals("MD")) { this.cases[i][j].setBackground(Color.pink);continue;}
-				if (plateau[i][j].equals("MT")) { this.cases[i][j].setBackground(Color.red);continue;}
-				
-			}
-		}
 }	
-		
+	
+	//gestion de la grille	
+			public void actionPerformed(ActionEvent événement)  { 
+			 
+					JButton leBouton = (JButton) événement.getSource(); 
+					for ( int ligne=0  ; ligne< 15;ligne++) {
+						for (int colonne=0;colonne<15; colonne++) {	
+							if (leBouton==cases[ligne][colonne])  {							
+								if (caseChevaletSelectionnee(ligne,colonne)) { 	//on veut poser sur la grille					
+									creationCaseCourante(ligne, colonne);
+									if (isCaseCentrale(ligne, colonne))fontCaseCentrale(15); 	// gererla police de la case centrale						
+									if (isJoker(chevalet.coup.size()-1)) joker(ligne, colonne);
+									affichageGrille(ligne, colonne,chevalet.coup.get(chevalet.coup.size()-1).affichage);
+									affichageChevalet();								
+													}
+									else if (caseGrilleSelectionnee(ligne,colonne)) { //on veut remettre dans le chevalet
+										int position = 	retrouveCaseDansCoup(ligne,colonne); 
+										if (isOldLetter(position)) break;  // c'est un coup joué un tour précédent															
+										int caseVideChevalet=chevalet.caseVide();		
+										if (isJoker(position)) 	remiseDansChevalet(caseVideChevalet,SacJeton.AffChev(' ', 0));
+														   else remiseDansChevalet(caseVideChevalet,cases[ligne][colonne].getText());	
+										if (isCaseCentrale(ligne, colonne))fontCaseCentrale(50);  															
+										affichageGrille(ligne, colonne, chevalet.coup.get(position).bonus);
+										chevalet.coup.remove(position);//on efface le coup de la lise de coups courants									
+									}
+								}					
+						}	
+					}				
+			}
+
+// predicat et fonctions de gestion des actions sur la grille
+	private boolean caseChevaletSelectionnee(int ligne,int colonne) {
+		return ((chevalet.caseCourante!=7)&& caseLibre(ligne,colonne));
+	}
+	private boolean isCaseCentrale(int ligne,int colonne) {
+		return ((ligne==7)&&(colonne==7));
+	}
+	
+	private boolean isJoker(int indice) {
+		return (chevalet.coup.get(indice).valeur==0);
+	}	
+	
+	private void joker(int ligne, int colonne) {
+		blanc =JOptionPane.showInputDialog("Quelle lettre veux tu mettre?");
+		chevalet.coup.get(chevalet.coup.size()-1).lettre=blanc;
+		chevalet.coup.get(chevalet.coup.size()-1).affichage=SacJeton.AffChev(blanc.charAt(0), 0);
+	}
+	
+	private void affichageChevalet() {
+		chevalet.cases[chevalet.caseCourante].setText("");
+		chevalet.cases[chevalet.caseCourante].setBackground(null);
+		chevalet.reglette[chevalet.caseCourante]="";
+		chevalet.caseCourante=7;		
+	}
+	
+	private void creationCaseCourante(int ligne, int colonne) {
+		chevalet.coup.add(new CaseCourante(ligne, colonne, cases[ligne][colonne].getText(),chevalet.cases[chevalet.caseCourante].getText()));
+	}
+	
+	private void affichageGrille(int ligne, int colonne, String texte) {
+		cases[ligne][colonne].setText(texte);	
+	}
+	
+	private boolean caseGrilleSelectionnee(int ligne,int colonne) {
+		return ((chevalet.caseCourante==7)&& !caseLibre(ligne,colonne));
+	}
+	
+	boolean caseLibre(int ligne, int colonne) { 
+		return (isCaseText(ligne, colonne, "") || isBonus(ligne,colonne));
+	}
+
+	 boolean isBonus(int ligne, int colonne) {
+		return (isCaseText(ligne, colonne, "MT")||isCaseText(ligne, colonne, "LT")||isCaseText(ligne, colonne, "LD")
+				||isCaseText(ligne, colonne, "MD")||isCaseText(ligne, colonne, "*"));
+	}	
+	
+	 boolean isCaseText(int ligne, int colonne, String texte) {
+		return cases[ligne][colonne].getText().equals(texte);
+	}
+	
+	private boolean isOldLetter(int position) {
+		return(position ==-1);
+	}
+	
+	
+	int retrouveCaseDansCoup(int ligne, int colonne) {
+		for (var i : chevalet.coup) {
+			if (i.ligne ==ligne && i.colonne ==colonne) return chevalet.coup.indexOf(i);	
+		}
+		 return -1;
+	}
+	
+	private void remiseDansChevalet(int position, String lettre) {
+		chevalet.reglette[position]=lettre; 	//on met dans la reglette									
+		chevalet.cases[position].setText(lettre);//  on met dans le chevalet		
+	}
 		
 }
 
