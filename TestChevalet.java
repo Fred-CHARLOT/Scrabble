@@ -6,7 +6,7 @@ public class TestChevalet {
 		String reglette []=sac.tirage(7);
 		Chevalet chevalet = new Chevalet(0,reglette);
 
-		
+		//test
 	}
 
 }
