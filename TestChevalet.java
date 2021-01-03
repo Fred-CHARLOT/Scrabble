@@ -1,4 +1,3 @@
-
 public class TestChevalet {
 
 	public static void main(String[] args) {
