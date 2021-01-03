@@ -46,7 +46,7 @@ String lettresAChanger [];
 			annuler.addActionListener(this);		
 	}
 	
-	public void actionPerformed(ActionEvent événement)  { /// EVENENEMENTactionPerformed
+	public void actionPerformed(ActionEvent événement)  { 
 		
 		JButton leBouton = (JButton) événement.getSource(); 
 		
@@ -69,23 +69,20 @@ String lettresAChanger [];
 			}
 		}
 		
-		if ((leBouton==valider) && (isNotVide()!=0)){                            //ne marche que pour le serveur
+		if ((leBouton==valider) && (isNotVide()!=0)){                           
 			setVisible(false);	
 			chevalet.valider.setEnabled(true);
 			chevalet.passer.setEnabled(true);
-			
 			lettresAChanger=new String[isNotVide()];					
 			int count=0;
 			for (int i=0;i<7;i++) {
 				if (!cases[i].getText().equals("")) {
 					lettresAChanger[count]=cases[i].getText();
 					count++;
-					cases[i].setText("");
+					cases[i].setText("");					
 				}
-			}
-			for (int i=0;i<lettresAChanger.length;i++) System.out.println(lettresAChanger[i]);                          
-			if (chevalet.serveurOuClient==0) {Partie.joueurAjoue=true;Partie.joueurAchange=true;}
-			else {PartieClient.joueurAjoue=true;PartieClient.joueurAChange=true;}
+			}			                        
+			chevalet.joueurAjoue=true;chevalet.joueurAchange=true;
 			chevalet.valider.setBackground(null);
 			
 		}
