@@ -1,4 +1,6 @@
-public class Plateau {
+import java.io.Serializable;
+
+public class Plateau implements Serializable{
 	static String [][] plateau ;										///static
 	
 	

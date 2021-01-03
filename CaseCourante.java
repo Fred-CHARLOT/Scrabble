@@ -1,40 +1,30 @@
 public class CaseCourante {
 public int ligne, colonne,valeur;
-public String bonus,lettre;
+public String bonus,affichage,lettre;
 	
-	CaseCourante(int ligne, int colonne, String bonus, String lettre){
+	CaseCourante(int ligne, int colonne, String bonus, String affichage){
 		this.ligne=ligne;
 		this.colonne=colonne;
 		this.bonus=bonus;
-		this.lettre=lettre;
-		this.valeur=AffichageToValeur(lettre);
+		this.affichage=affichage;
+		this.valeur=AffichageToValeur(affichage);
+		this.lettre=AffichageToLettre(affichage)[0];
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	public static String[] AffichageToLettre(String affichage) {
-		/*"<html>A  <font size = 5><sub>1</sub></font><br /></html>"*/
 		
+	public  String[] AffichageToLettre(String affichage) {	
 		String[] a = new String[2];
-		a[0]= Character. toString(affichage.charAt(6));
-		a[1]=AffichageToValeurString(affichage);
-		System.out.println(a[0]+" "+a[1]);		
+		a[0]= Character. toString(affichage.charAt(24));
+		a[1]=AffichageToValeurString(affichage);			
 		return a;
 	}
 	
-	public static int AffichageToValeur(String affichage) {
+	public  int AffichageToValeur(String affichage) {
 		return Integer.parseInt(AffichageToValeurString(affichage),10);	
 	}	
-
 	
-	public static String AffichageToValeurString(String affichage) {
+	
+	public  String AffichageToValeurString(String affichage) {
 		String a=Character. toString(affichage.charAt(57));
 		if (affichage.charAt(58)!='<') {a=a+Character. toString(affichage.charAt(58));}	
 		return a;

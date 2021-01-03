@@ -9,10 +9,13 @@ import javax.management.StringValueExp;
 
 public class PartieClient {
 	boolean partieEnCours;		
-	static boolean joueurAjoué;
-	static boolean joueurAPassé;
-	static boolean joueurAChangé;
+	
+	//static boolean joueurAjoue;
+	//static boolean joueurAPasse;
+	//static boolean joueurAChange;
+	
 	final boolean OnAttendQueLeJoueurJoue=true;
+	private boolean joueurAfini=false;
 	static int scoreJoueur1=0;
 	static int scoreServeur=0;
 	private int tirage;
@@ -21,12 +24,13 @@ public class PartieClient {
 	Chevalet chevalet;
 	GestionGrille grille; 
 	EvalCoup eval;
-	static Plateau plateau;					
+	static Plateau plateauPartie;					
 	Client client;
 	String reglette[];	
-	PartieClient(){
-		client = new Client();
-		 plateau= new Plateau();	                  
+	
+		PartieClient(){
+		client = new Client();	
+		plateauPartie= new Plateau();
          eval = new  EvalCoup();
          try {								
 				reglette =(String [])client.in.readObject();
@@ -49,18 +53,17 @@ public class PartieClient {
 		
 		while (partieEnCours == true) {	    				
 			ilJoue() ;		
-			//tester si c'est la fin de la partie
 			
 			jeJoue();			 
-			
-			//tester si c'est la fin de la partie
-			
-		
-	
+			if ((partieEnCours==false)||joueurAfini) {
+				chevalet.videCoup();
+				envoyerObjet(chevalet.reglette);
+				finDePartie();				
+			}
 		}	
 	}
 	
-	//Creer une array liste de tableau de  cases courantes pour tester. Attention la valeur est à zéro.
+	//Creer une array liste de tableau de  cases courantes pour tester Evalcoup. Attention la valeur est à zéro.
 	private ArrayList <CaseCourante[]> test (ArrayList<CaseCourante> liste){
 		ArrayList <CaseCourante[]> listeFinale=new ArrayList <CaseCourante[]>();
 		CaseCourante t[]= new CaseCourante [liste.size()];
@@ -83,9 +86,7 @@ public class PartieClient {
 	private void envoyer () {
 		envoyerObjet(Plateau.plateau); 
 		envoyerObjet(scoreJoueur1);	
-		envoyerObjet(joueurAfini());		
-		envoyerObjet(chevalet.getJetonsAChanger());
-		
+		envoyerObjet(joueurAfini);						
 	}
 	
 	
@@ -98,27 +99,31 @@ public class PartieClient {
 		}
 	}
 	
-	private void premierTour() {		
+	private void premierTour() {	//a verifier	
 		jeJoue();			 
 		envoyer();
-		chevalet.coup.clear();
 		chevalet.majReglette((String [])recevoirObjet());	
 	}
 	
 	
 	private void ilJoue() {
-		joueurAjoué=true;		
-		try {
-		Plateau.plateau =(String[][]) client.in.readObject();
-    	if (chevalet.coup.size()!=0)chevalet.videCoup();                  
-        grille.remplirCases(Plateau.plateau);      
-        scoreServeur=(int) client.in.readObject();
-        grille.score2.setText(nomServeur + " : " + String.valueOf(scoreServeur));
-        JetonsRestant=(int) client.in.readObject();
-        grille.jetonsRestant.setText("il reste " + JetonsRestant + " jetons");
-        //il faut aussi envoyer  l'état de la partie(si le serveur a gagné ou pas)
-        joueurAjoué=false;    
-        if (testVictoire()) finDePartie();
+		chevalet.joueurAjoue=true;		
+		try {					
+			Plateau.plateau=(String [] [])client.in.readObject();		  	
+			if (chevalet.coup.size()!=0)chevalet.videCoup();                  
+			grille.remplirCases(Plateau.plateau);      
+			scoreServeur=(int) client.in.readObject();		  
+			grille.score2.setText(nomServeur + " : " + String.valueOf(scoreServeur));
+			JetonsRestant=(int) client.in.readObject();        
+			grille.jetonsRestant.setText("il reste " + JetonsRestant + " jetons");
+			partieEnCours=(boolean) client.in.readObject();
+            chevalet.joueurAjoue=false;
+            if (partieEnCours==false) {
+            	System.out.println("partie fini");
+            	chevalet.videCoup();
+            	envoyerObjet(chevalet.reglette);
+            	finDePartie();
+            } 
 		} catch (IOException | ClassNotFoundException e) {
 	           e.printStackTrace();
 	      }
@@ -127,58 +132,78 @@ public class PartieClient {
 	
 	
 	private void jeJoue() {
-		joueurAjoué=false;
-		joueurAPassé=false;
+		chevalet.joueurAjoue=false;
+		chevalet.joueurAPasse=false;
+		chevalet.joueurAchange=false;
 		while (OnAttendQueLeJoueurJoue) {	     		  
-		chevalet.valider.setBackground(Color.green);		   
-	     	if (joueurAjoué==true) {		     	
-	     	envoyerObjet(joueurAChangé);
-	     	if (joueurAPassé)break;	
-	     	if (joueurAChangé){changeJetons();break;}
-	     	//extraction de la Array liste  de tableau de coups joués.
-	     	scoreJoueur1=scoreJoueur1+eval.scoreCoup(test(chevalet.coup));//il faudra remplacer chavalet.coup par la Aray liste.
-	     	miseAJourTableau();
-	     	grille.remplirCases(Plateau.plateau);//(pour enlever les couleurs)
-	     	grille.score1.setText(nomJoueur1 + " : "+ String.valueOf(scoreJoueur1));
-	     	envoyer();
-	     	chevalet.coup.clear();
-			chevalet.majReglette((String [])recevoirObjet());
-	     	break;
+			chevalet.valider.setBackground(Color.green);		   
+			if (chevalet.joueurAjoue==true) { 	    	
+				envoyerObjet(chevalet.joueurAPasse);
+					if (chevalet.joueurAPasse) {
+					grille.remplirCases(Plateau.plateau);
+					envoyerObjet(Plateau.plateau);  //sans ça ça marche pas: ma foi.....
+					partieEnCours=(boolean) recevoirObjet();					
+					break;	
+				}	    	
+				
+				envoyerObjet(chevalet.joueurAchange);		
+				if (chevalet.joueurAchange){
+					//chevalet.videCoup();
+					//grille.remplirCases(Plateau.plateau);
+					envoyerObjet(Plateau.plateau);
+					changeJetons();					
+					break;}	
+	     	
+	     	// Dans les autres cas :
+				//extraction de la Array liste  de tableau de coups joués.
+				scoreJoueur1=scoreJoueur1+eval.scoreCoup(test(chevalet.coup));//il faudra remplacer chavalet.coup par la Aray liste.
+				miseAJourTableau();
+				grille.remplirCases(Plateau.plateau);//(pour enlever les couleurs)
+				grille.score1.setText(nomJoueur1 + " : "+ String.valueOf(scoreJoueur1));
+				if (JetonsRestant-chevalet.jetonsAChanger>=0)grille.jetonsRestant.setText("il reste " + (JetonsRestant-chevalet.jetonsAChanger) + " jetons");
+				chevalet.coup.clear();
+				joueurAfini=joueurAfini();
+				envoyer();
+				
+				if (joueurAfini)   break;
+					//sinon on récupère de nouveaux jetons
+					envoyerObjet(chevalet.getJetonsAChanger());	     	
+					reglette=(String [])recevoirObjet();
+					//for (int i =0; i<chevalet.reglette.length;i++)System.out.println(chevalet.reglette[i]);
+					chevalet.majReglette(reglette);					
+					break;
 	     	}
 	     }		
 	}
 	
-	void changeJetons() {				
-		envoyerObjet(Plateau.plateau); 
-		envoyerObjet(scoreJoueur1);			
+	void changeJetons() {					
 		envoyerObjet((String[])chevalet.echange.lettresAChanger);		
 		reglette=(String[] )recevoirObjet();		
 		chevalet.majReglette(reglette);		
-		joueurAChangé=false;
+		chevalet.joueurAchange=false;
 	}
 	
 	
 	
 	private boolean joueurAfini() {
-		return ((JetonsRestant==0)&& chevalet.reglette.length==0);
+		return ((JetonsRestant==0)&& chevalet.isVide(chevalet.reglette));
 	}
 	
 	
-	private boolean testVictoire() {
-		return (scoreJoueur1==15);
-	}
 	
-	private void finDePartie() {
+	private void finDePartie() {	
+		try { 	     			
+			 Thread.sleep (5000);
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		    }		
 		fermeture();
 	}
 	
 	
-	
-	
-	
 	void miseAJourTableau() {
 		for (var i:chevalet.coup) {		
-			Plateau.plateau[i.ligne][i.colonne]=i.lettre;}
+			Plateau.plateau[i.ligne][i.colonne]=i.affichage;}
 	}
 	
 	void fermeture () {
@@ -189,12 +214,11 @@ public class PartieClient {
 		   	System.exit(0);
 			} catch (Exception e) {
 			     e.printStackTrace();
-			    }			
-		  System.out.println("fin3");
+			    }		
 	}
 	
 	
-	}
+}
 		
 			
 		
