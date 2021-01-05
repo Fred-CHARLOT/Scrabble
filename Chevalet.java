@@ -1,4 +1,3 @@
-
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -7,10 +6,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Random;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 
@@ -18,6 +19,7 @@ import javax.swing.JPanel;
 public class Chevalet  implements ActionListener {
 	JButton cases [];  //creation du tableau de 7 lettres
 	ArrayList <CaseCourante> coup= new ArrayList <CaseCourante>() ;	
+	Verificateur verificateur= new Verificateur();
 	JButton valider, passer, echanger,permuter;
 	JFrame	fenetre1;
 	JPanel panneau1,panneau2;
@@ -26,7 +28,10 @@ public class Chevalet  implements ActionListener {
 	int serveurOuClient;
 	String reglette[];
 	Echange echange;
-	
+	boolean joueurAchange=false;
+	boolean joueurAPasse=false;
+	boolean joueurAjoue=false;
+	private boolean premierCoup=true;
 	Chevalet (int ServeurClient,String reglette [] ){
 		serveurOuClient=ServeurClient;
 		echange=new Echange(this);
@@ -43,7 +48,7 @@ public class Chevalet  implements ActionListener {
 		panneau1.setLayout(disposition1);
 		fenetre1.add("Center",panneau1);
 		fenetre1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
-
+		
 		
 		//Font f=new Font("Arial", Font.BOLD, 120);
 		
@@ -77,13 +82,14 @@ public class Chevalet  implements ActionListener {
 		
 	}
 	
+	
 		
 	public void actionPerformed(ActionEvent événement)  { /// EVENENEMENTactionPerformed
 		
 		JButton leBouton = (JButton) événement.getSource(); /// EVENENEMENT 
 		
 		
-		if ((leBouton==valider)&& (Partie.joueurAjoue==false)&&(serveurOuClient==0)&& (coup.size()!=0)  ){			
+		if ((leBouton==valider)&& (joueurAjoue==false) && (coup.size()!=0) ){		//	&&(serveurOuClient==0)
 			 	// à partir de la Array list "coup" :
 				//vérifier que le positionnement est valide.
 			//Si c'est bon :
@@ -92,60 +98,45 @@ public class Chevalet  implements ActionListener {
 				//calculer le score à l'aide de cette liste et d'EvalCoup.
 			//sinon: renvoyer les jetons sur le chevalets(pour mettre coup.size à zéro)
 			//peut être prévoir un message d'erreur, style les lettres ne sont pas alignées.
-				Partie.compteur=0;
+				//Partie.compteur=0;
+			
+			
+				if (verificateur.verificateur(coup)) {
 				jetonsAChanger=coup.size();
-				Partie.joueurAjoue=true;
-				valider.setBackground(null); //changer la couleur du bouton pour passer la main
+				joueurAjoue=true;
+				valider.setBackground(null);//changer la couleur du bouton pour passer la main						
+				}
+										
 		}	
 		
-		if ((leBouton==valider)&& (PartieClient.joueurAjoue==false)&& (serveurOuClient==1)&&(coup.size()!=0)) { 			
-			jetonsAChanger=coup.size();
-			PartieClient.joueurAjoue=true;  
-			valider.setBackground(null);
-		 }
 			
 		
-		
-		if ((leBouton==passer)&& (Partie.joueurAjoue==false)&&(serveurOuClient==0)  ) {			
-			videCoup();
-			Partie.compteur++;
-			Partie.joueurAPasse=true;			
-			Partie.joueurAjoue=true;
+		if ((leBouton==passer)&& (joueurAjoue==false) ) {	//	&&(serveurOuClient==0) 	
+			videCoup();			
+			joueurAPasse=true;			
+			joueurAjoue=true;
 			valider.setBackground(null);
 		}	
 		
-		if ((leBouton==passer)&& (PartieClient.joueurAjoue==false)&&(serveurOuClient==1)  ) {					
-			videCoup();
-			PartieClient.joueurAPasse=true;
-			PartieClient.joueurAjoue=true;
-			valider.setBackground(null);
-		}	
+	
 		
-		
-		
-		
-		
-		if ((leBouton==echanger)&& (Partie.joueurAjoue==false)) {		
-		
+		if ((leBouton==echanger)&& (joueurAjoue==false)) {		
 		echange.setVisible(true);
 		valider.setEnabled(false);
 		passer.setEnabled(false);	
 		valider.setBackground(null);
 		}
 		
-		
-		
-		
 		if (leBouton==permuter) {				
-			this.reglette=modifAleat();
-			afficheReglette();
+			//this.reglette=modifAleat();
+			//afficheReglette();
+			
+			InsertionUtil.afficheMots(InsertionUtil.extraireMots(Plateau.plateau));
+			
 			}
+	
 		
-		
-		
-		
-		
-		//echange de cases. par des permutations. A faire plsu tard aussi en intercalant.
+		//echange de cases. par des permutations. A faire plus tard aussi en intercalant.
 				
 			for (int i = 0; i<7;i++) {
 				if (leBouton==cases[i]){
@@ -153,10 +144,8 @@ public class Chevalet  implements ActionListener {
 					else {
 						if (caseCourante==i){caseCourante=7;cases[i].setBackground(null);}
 						else {permute(i,caseCourante);caseCourante=7;}
-					}
-					
-				}	
-				
+					}					
+				}					
 			}		
 		}		
 	
@@ -192,6 +181,7 @@ public class Chevalet  implements ActionListener {
 		for (var i : coup) {
 			while (!cases[compteur].getText().equals(""))compteur++;
 			cases[compteur].setText(i.affichage);
+			reglette[compteur]=i.affichage;
 		}
 	coup.clear();	
 	}
@@ -217,11 +207,18 @@ public class Chevalet  implements ActionListener {
 	}
 
 boolean isVide(String t []) {
-	for (int i=0; i<t.length;i++) {if (t[i]!="")return false;}
+	for (int i=0; i<t.length;i++) {if (!t[i].equals(""))return false;}
 	return true;
 }
 
-	
-	
+int retrouveCaseDansCoup(int ligne, int colonne) {
+	for (var i : coup) {
+		if (i.ligne ==ligne && i.colonne ==colonne) return coup.indexOf(i);	
+	}
+	 return -1;
+}
+
+
+
 }	
 	
