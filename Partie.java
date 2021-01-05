@@ -1,6 +1,8 @@
 import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
+
 public class Partie {
 Serveur serveur;
 Plateau plateau;		
@@ -11,17 +13,20 @@ EvalCoup eval;
 String reglette [];
 String t[] [];
 String monNom="Raoul", nomJoueur1;
-boolean partieEnCours;
-static boolean joueurAjoue;
-static boolean joueurAPasse;
-static boolean joueurAchange;
-boolean joueurClientApasse;
-boolean joueurClientAchange;
-boolean joueurClientAFini=false;
-final boolean OnAttendQueLeJoueurJoue=true;
+private boolean partieEnCours;
+
+//static boolean joueurAjoue;
+//static boolean joueurAPasse;
+//static boolean joueurAchange;
+
+
+private boolean joueurClientApasse;
+private boolean joueurClientAchange;
+private boolean joueurClientAFini=false;
+private final boolean OnAttendQueLeJoueurJoue=true;
 private int scoreServeur=0;
 private int scoreJoueur0,tirage;
-static int compteur=0;
+private int compteur=0;
 
 	Partie(int nombreDeJoueur){
 		serveur = new Serveur(nombreDeJoueur);
@@ -42,44 +47,47 @@ static int compteur=0;
 	
 	private void premierTour() {	
 		ilJoue(0); //le joueur 0 joue	
-		envoyerObjetA(reglette, 0);
+		
 	}
 	
 	public	void deroulement() {
 		partieEnCours = true;
-		tirage=tirage();
+		tirage=tirage();		
 		envoyerObjetA(tirage, 0);
 		if (tirage==1)premierTour();
 		
 		while (partieEnCours==true) {  			
 			jeJoue()	;			
-			envoyerJoueur(0);System.out.println(serveurAFini());
+			envoyerJoueur(0);			
 			if (testVictoire()) finDePartie( ) ; 
-			ilJoue(0); //le joueur 0 joue	
+			ilJoue(0); //le joueur 0 joue			
 			if (testVictoire()) finDePartie( );			
 		}				
 	}
 	
 	private void jeJoue() {
-		joueurAjoue=false;
-		joueurAPasse=false;
+		chevalet.joueurAjoue=false;
+		chevalet.joueurAPasse=false;
 		while (OnAttendQueLeJoueurJoue) {	     		  
 		chevalet.valider.setBackground(Color.green);	   	
-	     	if (joueurAjoue==true) {	
-	     		if (joueurAPasse) {grille.remplirCases(Plateau.plateau);break;}	
-	     		if (joueurAchange) {
+	     	if (chevalet.joueurAjoue==true) {	
+	     		if (chevalet.joueurAPasse) {compteur++;grille.remplirCases(Plateau.plateau);break;}	
+	     		if (chevalet.joueurAchange) {
 	     			changeJetons();
 	     			chevalet.majReglette(reglette);
+	     			compteur=0;
 	     			System.out.println("a changé");
 	     			break;
 	     		}
+	     		compteur=0;
 	     		miseAJourTableau();//met à jour le plateau à partir du coup courant
+	     		grille.remplirCases(Plateau.plateau);
 	     		scoreServeur=scoreServeur+eval.scoreCoup(test(chevalet.coup));															//ici il faudra evaluer le score
 	     		grille.score2.setText(monNom + " : "  +String.valueOf(scoreServeur));	     		
 	     		reglette=sac.tirage(chevalet.getJetonsAChanger());
 	     		grille.jetonsRestant.setText("il reste " + sac.sac_jeton.size() + " jetons");
 	     		chevalet.coup.clear();	    	     		
-	     		chevalet.majReglette(reglette);	  
+	     		chevalet.majReglette(reglette);	
 	     		//System.out.println("apres");for (int i=0; i<7;i++)System.out.println(i + chevalet.reglette[i]);
 	     		break;
 	     	}
@@ -87,23 +95,26 @@ static int compteur=0;
 	}
 	
 	private void ilJoue(int joueur) {
-		joueurAjoue=true;//pour ne pas jouer quand ce n'est pas son tour
+		chevalet.joueurAjoue=true;//pour ne pas jouer quand ce n'est pas son tour
 		while (OnAttendQueLeJoueurJoue) {
 		try {		
+			
 			joueurClientApasse=(Boolean)recevoirObjet(0);
 			if (joueurClientApasse==true) {
 				Plateau.plateau =(String[][]) serveur.in[0].readObject(); //ça marche pas sans ça
 				compteur++;	
 				envoyerObjetA(compteur!=6, 0);
 				break;}
-				
-			if (joueurClientAchange=(Boolean)recevoirObjet(0)==true) {
+			
+			joueurClientAchange=(Boolean)recevoirObjet(0);	
+			if (joueurClientAchange==true) {
 				Plateau.plateau =(String[][]) serveur.in[0].readObject();
 				reglette=sac.echangeJetons((String[])recevoirObjet(joueur));
 				 envoyerObjetA(reglette, 0);
-	        	
+	        	compteur=0;
 				 break;
 			}
+			
 			//dans les autres cas:
 			compteur=0;  
 			Plateau.plateau =(String[][]) serveur.in[0].readObject();  //réceptionner le coup du joueur suivant et maj du plateau	 
@@ -113,6 +124,7 @@ static int compteur=0;
 			grille.score1.setText(nomJoueur1+ "  : " +String.valueOf(scoreJoueur0));//Affichage score  
 			joueurClientAFini=(boolean)recevoirObjet(0);			
 			if (joueurClientAFini)break;
+			
 			//sinon on envoie les nouveaux jetons
 			reglette= sac.tirage((int)serveur.in[0].readObject());			         
             grille.jetonsRestant.setText("il reste " + sac.sac_jeton.size() + " jetons");            
@@ -142,7 +154,7 @@ static int compteur=0;
 	void changeJetons() {
 		reglette=sac.echangeJetons(chevalet.echange.lettresAChanger);
 		compteur=0;
-		joueurAchange=false;
+		chevalet.joueurAchange=false;
 	}
 	
 	
@@ -187,7 +199,8 @@ static int compteur=0;
 	
 
 	private int tirage() {
-		return 0;
+		Random tirage = new Random();
+		return tirage.nextInt(2);
 	}
 	
 
