@@ -34,7 +34,7 @@ public class GestionGrille  implements ActionListener {
 	public void affichage(int serveurOuclient) {
 		cases = new JButton [15][15];
 		if (serveurOuclient==0) fenetre1=new JFrame("Scrabble Serveur by Houssem, Fred & JB ");	
-		else fenetre1=new JFrame("Scrabble Client by Houssem, Fred & JB " +chevalet.caseCourante);	
+		else fenetre1=new JFrame("Scrabble Client by Houssem, Fred & JB " );	
 		fenetre1.setSize(1200, 750) ;
 		fenetre1.setLocationRelativeTo(null);//pour centrer la fenetre
 		fenetre1.setVisible(true);
