@@ -34,7 +34,7 @@ public class GestionGrille  implements ActionListener {
 	public void affichage(int serveurOuclient) {
 		cases = new JButton [15][15];
 		if (serveurOuclient==0) fenetre1=new JFrame("Scrabble Serveur by Houssem, Fred & JB ");	
-		else fenetre1=new JFrame("Scrabble Client by Houssem, Fred & JB " +chevalet.caseCourante);	
+		else fenetre1=new JFrame("Scrabble Client by Houssem, Fred & JB " );	
 		fenetre1.setSize(1200, 750) ;
 		fenetre1.setLocationRelativeTo(null);//pour centrer la fenetre
 		fenetre1.setVisible(true);
@@ -111,7 +111,7 @@ public class GestionGrille  implements ActionListener {
 									affichageChevalet();								
 													}
 									else if (caseGrilleSelectionnee(ligne,colonne)) { //on veut remettre dans le chevalet
-										int position = 	retrouveCaseDansCoup(ligne,colonne); 
+										int position = 	chevalet.retrouveCaseDansCoup(ligne,colonne); 
 										if (isOldLetter(position)) break;  // c'est un coup joué un tour précédent															
 										int caseVideChevalet=chevalet.caseVide();		
 										if (isJoker(position)) 	remiseDansChevalet(caseVideChevalet,SacJeton.AffChev(' ', 0));
@@ -138,7 +138,7 @@ public class GestionGrille  implements ActionListener {
 	}	
 	
 	private void joker(int ligne, int colonne) {
-		blanc =JOptionPane.showInputDialog("Quelle lettre veux tu mettre?");
+		blanc =JOptionPane.showInputDialog("Quelle lettre veux tu mettre?").toUpperCase();
 		chevalet.coup.get(chevalet.coup.size()-1).lettre=blanc;
 		chevalet.coup.get(chevalet.coup.size()-1).affichage=SacJeton.AffChev(blanc.charAt(0), 0);
 	}
@@ -179,13 +179,6 @@ public class GestionGrille  implements ActionListener {
 		return(position ==-1);
 	}
 	
-	
-	int retrouveCaseDansCoup(int ligne, int colonne) {
-		for (var i : chevalet.coup) {
-			if (i.ligne ==ligne && i.colonne ==colonne) return chevalet.coup.indexOf(i);	
-		}
-		 return -1;
-	}
 	
 	private void remiseDansChevalet(int position, String lettre) {
 		chevalet.reglette[position]=lettre; 	//on met dans la reglette									
