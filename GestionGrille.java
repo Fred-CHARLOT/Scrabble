@@ -27,10 +27,12 @@ public class GestionGrille  implements ActionListener {
 	GestionGrille (int serveurOuclient,Chevalet chevalet){   
 		this.chevalet=chevalet;	
 		affichage(serveurOuclient);
-		//ImageIcon image = new ImageIcon("etoile.png");
-		//cases[0][1].setIcon(image);
 	}
 		
+	/**
+	 * Gestion de l'affichage de la grille
+	 * @param serveurOuclient pour différentier l'affichage du serveur  et du client
+	 */
 	public void affichage(int serveurOuclient) {
 		cases = new JButton [15][15];
 		if (serveurOuclient==0) fenetre1=new JFrame("Scrabble Serveur by Houssem, Fred & JB ");	
@@ -60,12 +62,13 @@ public class GestionGrille  implements ActionListener {
 		panneau3.add(score2);		
 		tableauBoutons();
 		
-		//plateau
 		remplirCases(Plateau.plateau);
 		
 	}
 	
-	
+	/**
+	 * Creation du tableau 15*15 de JButton
+	 */
 	public void tableauBoutons() {
 			for ( int ligne=0  ; ligne< 15;ligne++) {
 			for (int colonne=0;colonne<15; colonne++) {
@@ -77,11 +80,21 @@ public class GestionGrille  implements ActionListener {
 			
 	}
 	
+	/**
+	 * Pour gerer l'affichege de la case centrale
+	 * @param i
+	 */
 	public void fontCaseCentrale(int i) {
 		Font font=new Font("Arial", Font.BOLD,i);
 		cases[7][7].setFont(font); 
 	}
 	
+	
+	/**
+	 * Affichage de la grille avec les bonnus.
+	 * @param plateau le contenu de la grille. Soit des cases vides sans bonus(""), soit des bonus(MD,MT,LD,LT,*),
+	 * soit les lettres posées sous forme html
+	 */
 	void remplirCases(String plateau[][]) {			
 		if (plateau[7][7].equals("*"))fontCaseCentrale(50); else fontCaseCentrale(15);
 		for (int i=0; i<15 ; i++){
@@ -96,7 +109,9 @@ public class GestionGrille  implements ActionListener {
 	}
 }	
 	
-	//gestion de la grille	
+	/**
+	 * Gestion des actions des boutons de la grille. Interaction avec le chevalet.
+	 */
 			public void actionPerformed(ActionEvent événement)  { 
 			 
 					JButton leBouton = (JButton) événement.getSource(); 
@@ -110,7 +125,7 @@ public class GestionGrille  implements ActionListener {
 									affichageGrille(ligne, colonne,chevalet.coup.get(chevalet.coup.size()-1).affichage);
 									affichageChevalet();								
 													}
-									else if (caseGrilleSelectionnee(ligne,colonne)) { //on veut remettre dans le chevalet
+									else if (isCaseGrilleSelectionnee(ligne,colonne)) { //on veut remettre dans le chevalet
 										int position = 	chevalet.retrouveCaseDansCoup(ligne,colonne); 
 										if (isOldLetter(position)) break;  // c'est un coup joué un tour précédent															
 										int caseVideChevalet=chevalet.caseVide();		
@@ -125,9 +140,11 @@ public class GestionGrille  implements ActionListener {
 					}				
 			}
 
-// predicat et fonctions de gestion des actions sur la grille
+// predicats et fonctions de gestion des actions sur la grille
+	
+
 	private boolean caseChevaletSelectionnee(int ligne,int colonne) {
-		return ((chevalet.caseCourante!=7)&& caseLibre(ligne,colonne));
+		return ((chevalet.caseCourante!=7)&& isCaseLibre(ligne,colonne));
 	}
 	private boolean isCaseCentrale(int ligne,int colonne) {
 		return ((ligne==7)&&(colonne==7));
@@ -137,12 +154,18 @@ public class GestionGrille  implements ActionListener {
 		return (chevalet.coup.get(indice).valeur==0);
 	}	
 	
+	/**
+	 * 	Gestion des jokers: choix de la lettre et affichage en majuscule.
+	 */		
 	private void joker(int ligne, int colonne) {
 		blanc =JOptionPane.showInputDialog("Quelle lettre veux tu mettre?").toUpperCase();
 		chevalet.coup.get(chevalet.coup.size()-1).lettre=blanc;
 		chevalet.coup.get(chevalet.coup.size()-1).affichage=SacJeton.AffChev(blanc.charAt(0), 0);
 	}
 	
+	/**
+	 * Affichage d'une lettre dans le chevalet
+	 */
 	private void affichageChevalet() {
 		chevalet.cases[chevalet.caseCourante].setText("");
 		chevalet.cases[chevalet.caseCourante].setBackground(null);
@@ -150,6 +173,12 @@ public class GestionGrille  implements ActionListener {
 		chevalet.caseCourante=7;		
 	}
 	
+	/**
+	 * Création d'une {@link CaceCourante} à partir des coordonnées sur la grilleen parametre.
+	 *  On y stocke le bonus éventuel  et l'affichage courant du chevalet.
+	 * @param ligne coordonnées du Jbutton sur lequel on veut poser la lettre.
+	 * @param colonne
+	 */
 	private void creationCaseCourante(int ligne, int colonne) {
 		chevalet.coup.add(new CaseCourante(ligne, colonne, cases[ligne][colonne].getText(),chevalet.cases[chevalet.caseCourante].getText()));
 	}
@@ -158,11 +187,11 @@ public class GestionGrille  implements ActionListener {
 		cases[ligne][colonne].setText(texte);	
 	}
 	
-	private boolean caseGrilleSelectionnee(int ligne,int colonne) {
-		return ((chevalet.caseCourante==7)&& !caseLibre(ligne,colonne));
+	private boolean isCaseGrilleSelectionnee(int ligne,int colonne) {
+		return ((chevalet.caseCourante==7)&& !isCaseLibre(ligne,colonne));
 	}
 	
-	boolean caseLibre(int ligne, int colonne) { 
+	boolean isCaseLibre(int ligne, int colonne) { 
 		return (isCaseText(ligne, colonne, "") || isBonus(ligne,colonne));
 	}
 
@@ -175,7 +204,8 @@ public class GestionGrille  implements ActionListener {
 		return cases[ligne][colonne].getText().equals(texte);
 	}
 	
-	private boolean isOldLetter(int position) {
+	
+	 private boolean isOldLetter(int position) {
 		return(position ==-1);
 	}
 	
