@@ -8,30 +8,14 @@ public class SacJeton {
 		this.sac_jeton=SacJeton.Sac_Initial();
 	}
 
-	
-	
-	
-	public static String AffChev(char a, int b) {  //static obligatoire ici
 		
-		String c = Character. toString(a);
-		String d = Integer. toString(b);
-		
-		return "<html><font size = 7><b>" + c   +  "</b></font>"  + "<font size = 4><sub>" + " "  + d + "</sub></font></html>";
-	}
-	
-	
-	
-	
-	
-	
 	final static ArrayList <String> Sac_Initial() {
 	
 	ArrayList <String> sac = new ArrayList<String>() ;
-	
-		
+			
 			for (int i=0;i<=14;i++) {sac.add(SacJeton.AffChev('E', 1));}
 			for (int i=15;i<=23;i++){sac.add(SacJeton.AffChev('A', 1));}
-			/*for (int i=24;i<=31;i++) {sac.add(SacJeton.AffChev('I', 1));}
+			for (int i=24;i<=31;i++) {sac.add(SacJeton.AffChev('I', 1));}
 			for (int i=32;i<=37;i++) {sac.add(SacJeton.AffChev('N', 1));}
 			for (int i=38;i<=43;i++) {sac.add(SacJeton.AffChev('O', 1));}
 			for (int i=44;i<=49;i++) {sac.add(SacJeton.AffChev('R', 1));}
@@ -49,7 +33,7 @@ public class SacJeton {
 			for (int i=89;i<=90;i++) {sac.add(SacJeton.AffChev('H', 4));}
 			for (int i=91;i<=92;i++) {sac.add(SacJeton.AffChev('V', 4));}
 			for (int i=93;i<=94;i++) {sac.add(SacJeton.AffChev(' ', 0));}
-			sac.add(SacJeton.AffChev('J', 8));*/
+			sac.add(SacJeton.AffChev('J', 8));
 			sac.add(SacJeton.AffChev('Q', 8));
 			sac.add(SacJeton.AffChev('K', 10));
 			sac.add(SacJeton.AffChev('W', 10));
@@ -57,14 +41,23 @@ public class SacJeton {
 			sac.add(SacJeton.AffChev('Y', 10));
 			sac.add(SacJeton.AffChev('Z', 10));
 		
-			
 			return sac;
 		}
 	
-	public void Sac_décalage(int a) {
-				
-		int d = (this.sac_jeton).size();
+	
+public static String AffChev(char a, int b) {  //static obligatoire ici
 		
+		String c = Character. toString(a);
+		String d = Integer. toString(b);		
+		return "<html><font size = 7><b>" + c   +  "</b></font>"  + 
+				"<font size = 4><sub>" + " "  + d + "</sub></font></html>";
+	}
+	
+	
+	
+	
+	public void Sac_décalage(int a) {				
+		int d = (this.sac_jeton).size();		
 		if (a<d) (this.sac_jeton).remove(a);
 	}
 		
@@ -74,20 +67,19 @@ public class SacJeton {
 		int d = (this.sac_jeton).size();
 		if(d==0) {String a [] = new String [0];return a;}
 		
-		if (x>d) x=d;
-		String[] a = new String[x];
-		if (x >0) {
-			for (int k =0; k<x ; k++) {
-				Random tirage= new Random();
-				int b = tirage.nextInt(d);
-				a[k] = (this.sac_jeton).get(b); 
-				this.Sac_décalage(b);
-				d=d-1;
-			}
-		
-		}
-		return a;
-		}
+			if (x>d) x=d;
+				String[] a = new String[x];
+				if (x >0) {
+					for (int k =0; k<x ; k++) {
+						Random tirage= new Random();
+						int b = tirage.nextInt(d);
+						a[k] = (this.sac_jeton).get(b); 
+						this.Sac_décalage(b);
+						d=d-1;
+					}		
+				}
+			return a;
+	}
 		
 	
 	public void conversion(String[] a, Chevalet reglette) {
@@ -97,18 +89,7 @@ public class SacJeton {
 		
 	}
 	
-	public static String[] AffichageToLettre(String affichage) {
-		
-		/*"<html><font size = 7><b>" + c   +  "</b></font>"  + "<font size = 4><sub>" + " "  + d + "</sub></font></html>";*/
-		String[] a = new String[2];
-		a[0]= Character. toString(affichage.charAt(24));
-		a[1]=Character. toString(affichage.charAt(57));
-		if (affichage.charAt(58)!='<') {a[1]=a[1]+Character. toString(affichage.charAt(58));}
-		/*System.out.print(a[0]+" "+a[1]);*/
-		
-		return a;
-	}	
-	
+
 	
 	
 	
@@ -122,12 +103,6 @@ public String[] recupjetons(int n) { /* n est le nombre de jeton à remplacer */
 	}
 		
 		
-public boolean debutdepartie() {
-	
-	Random tirage = new Random();
-	int b = tirage.nextInt(1);
-	return b==1; /* si b=1 le joueur 1 commence ? */
-}
 
 public String[] echangeJetons(String[] jetons) {
 	/*assert this.sac_jeton.size()>=7;*/
@@ -141,6 +116,15 @@ public String[] echangeJetons(String[] jetons) {
 }
 
 
+public static String[] AffichageToLettre(String affichage) {
+	
+	/*"<html><font size = 7><b>" + c   +  "</b></font>"  + "<font size = 4><sub>" + " "  + d + "</sub></font></html>"*/
+	String[] a = new String[2];
+	a[0]= Character. toString(affichage.charAt(24));
+	a[1]=Character. toString(affichage.charAt(57));
+	if (affichage.charAt(58)!='<') {a[1]=a[1]+Character. toString(affichage.charAt(58));}		
+	return a;
+}	
 
 
 public int sommeResteChevalet(String[] ResteChevalet) { //pour le joueur à qui il reste des lettres
@@ -163,13 +147,6 @@ public int scoreFinalPlus(int score, String[] ResteChevaletAutre) {//pour le jou
 	return score+sommeResteChevalet(ResteChevaletAutre);
 }
 	
-/*public static void main(String[] Args) {
-	
-	SacJeton.AffichageToLettre("<html><font size = 7><b>" + "K"   +  "</b></font>"  + "<font size = 4><sub>" + " "  + "10" + "</sub></font></html>");
-	
-	
-}*/
-
 
 
 }
