@@ -4,23 +4,21 @@ import java.awt.Color;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.management.StringValueExp;
+import javax.swing.JOptionPane;
 
 public class PartieClient {
+	private int ip;
 	boolean partieEnCours;		
-	
-	//static boolean joueurAjoue;
-	//static boolean joueurAPasse;
-	//static boolean joueurAChange;
-	
 	final boolean OnAttendQueLeJoueurJoue=true;
 	private boolean joueurAfini=false;
 	static int scoreJoueur1=0;
 	static int scoreServeur=0;
 	private int tirage;
 	int JetonsRestant=88;
-	public String nomServeur, nomJoueur1="JB";
+	public String nomServeur, nomJoueur1;
 	Chevalet chevalet;
 	GestionGrille grille; 
 	EvalCoup eval;
@@ -28,8 +26,9 @@ public class PartieClient {
 	Client client;
 	String reglette[];	
 	
-		PartieClient(){
-		client = new Client();	
+		PartieClient(String nom, String ip){
+		nomJoueur1=nom;
+		client = new Client( ip);	
 		plateauPartie= new Plateau();
          eval = new  EvalCoup();
          try {								
@@ -45,11 +44,14 @@ public class PartieClient {
 		}     
 	}	
 	
-	
+	/**
+	 * deroulement de la partie. Reception du résultat du tirage au sort pour désigner celui qui commence,
+	 * puis jeu à tour de rôle jusqu'à ce que le joueur ait fini la partie ou reçoive un message de fin
+	 * 
+	 */
 	public void deroulement() {
 		partieEnCours =true;			 
-		tirage=(int)recevoirObjet();
-		System.out.println(tirage);
+		tirage=(int)recevoirObjet();		
 		if (tirage==1)premierTour();
 		
 		while (partieEnCours == true) {	    				
@@ -63,27 +65,21 @@ public class PartieClient {
 		}	
 	}
 	
-	private void premierTour() {	//a verifier	
-		jeJoue();			 
-		//envoyer();
-		//chevalet.majReglette((String [])recevoirObjet());	
+	
+	/**
+	 * gère le cas où ce joueur joue en premier.
+	 * Coincide au tirage au sort de 1. (0 si c'est le serveur)
+	**/
+	private void premierTour() {		
+		jeJoue();			
 	}
 	
 	
-	
-	
-	
-	
-	//Creer une array liste de tableau de  cases courantes pour tester Evalcoup. Attention la valeur est à zéro.
-	private ArrayList <CaseCourante[]> test (ArrayList<CaseCourante> liste){
-		ArrayList <CaseCourante[]> listeFinale=new ArrayList <CaseCourante[]>();
-		CaseCourante t[]= new CaseCourante [liste.size()];
-		int i=0;
-		for (var k: liste) { t[i]=k;i++;}
-		listeFinale.add(t);	
-		return listeFinale;
-	}
-	
+	/**
+	 * Pour recevoir un objet du serveur
+	 * @return {@link Object} l'objet reçu. 
+	 * 
+	 */
 	private Object recevoirObjet() {
 		Object O=new Object();
 		try {
@@ -94,13 +90,11 @@ public class PartieClient {
 		return O;
 	};
 	
-	private void envoyer () {
-		envoyerObjet(Plateau.plateau); 
-		envoyerObjet(scoreJoueur1);	
-		envoyerObjet(joueurAfini);						
-	}
 	
-	
+	/**
+	 * Pour renvoyer un {@link Object}au serveur.
+	 * @param objetEnvoyé {@link Object}
+	 */
 	private void envoyerObjet(Object objetEnvoyé) {
 		try { 		
 		client.out.writeObject(objetEnvoyé);
@@ -110,9 +104,29 @@ public class PartieClient {
 		}
 	}
 	
+	/**
+	 * gère tout ce qu'il faut envoyer au serveur.
+	 * Il faut envoyer:
+	 * Le plateau mis à jour. 
+	 *  le score .
+	 *  le booléen pour indiquer si la partie est finie .
+	 */
+	private void envoyer () {
+		envoyerObjet(Plateau.plateau); 
+		envoyerObjet(scoreJoueur1);	
+		envoyerObjet(joueurAfini);						
+	}
 	
 	
 	
+	
+	
+	
+	/**
+	 * C'est au serveur de jouer.
+	 * réception(et mise à jour) du plateau, du score, du nombre de jetons restants et réception de l'état de la partie.
+	 * Envvoie des jetons restants en fin de partie.
+	 */
 	private void ilJoue() {
 		chevalet.joueurAjoue=true;		
 		try {					
@@ -138,6 +152,12 @@ public class PartieClient {
 	
 	
 	
+	/**
+	 * gestion du client qui joue. 
+	 * 3 cas: il passe(envoie du message), il échange ses jetons, ou il pose des jetons.
+	 * Dans ce cas: après extraction des mots et calcul du score: mise à jour de l'affichage, 
+	 * envoie des informations au serveur et récupération des nouvelles lettres.
+	 */
 	private void jeJoue() {
 		chevalet.joueurAjoue=false;
 		chevalet.joueurAPasse=false;
@@ -163,9 +183,11 @@ public class PartieClient {
 					break;}	
 	     	
 	     	// Dans les autres cas :
-				//extraction de la Array liste  de tableau de coups joués.
-				scoreJoueur1=scoreJoueur1+eval.scoreCoup(test(chevalet.coup));//il faudra remplacer chavalet.coup par la Aray liste.
-				miseAJourTableau();
+				
+				ArrayList <CaseCourante[]> listeFinale = conversion(chevalet.nouveauxMots);
+				
+				scoreJoueur1=scoreJoueur1+eval.scoreCoup(listeFinale);
+				//miseAJourTableau();
 				grille.remplirCases(Plateau.plateau);//(pour enlever les couleurs)
 				grille.score1.setText(nomJoueur1 + " : "+ String.valueOf(scoreJoueur1));
 				if (JetonsRestant-chevalet.jetonsAChanger>=0)grille.jetonsRestant.setText("il reste " + (JetonsRestant-chevalet.jetonsAChanger) + " jetons");
@@ -176,14 +198,16 @@ public class PartieClient {
 				if (joueurAfini)   break;
 					//sinon on récupère de nouveaux jetons
 					envoyerObjet(chevalet.getJetonsAChanger());	     	
-					reglette=(String [])recevoirObjet();
-					//for (int i =0; i<chevalet.reglette.length;i++)System.out.println(chevalet.reglette[i]);
+					reglette=(String [])recevoirObjet();					
 					chevalet.majReglette(reglette);					
 					break;
 	     	}
 	     }		
 	}
 	
+	/**
+	 * Gestion de l'échange de lettres contre de nouvelles : Envoie, reception et mise à jour.
+	 */
 	void changeJetons() {					
 		envoyerObjet((String[])chevalet.echange.lettresAChanger);		
 		reglette=(String[] )recevoirObjet();		
@@ -192,16 +216,42 @@ public class PartieClient {
 	}
 	
 	
-	
+	/**
+	 * 
+	 * @return true si le joueur a terminé la partie
+	 */
 	private boolean joueurAfini() {
 		return ((JetonsRestant==0)&& chevalet.isVide(chevalet.reglette));
 	}
 	
 	
+	/**
+	 * Transforme une {@link List}   de {@link List}  de {@link CaseCourante}   en {@link List}   de {@link CaseCourante[]}
+	 * @param mot {@link List}   de {@link List}  de {@link CaseCourante}
+	 * @return  {@link List}   de {@link CaseCourante[]}
+	 */
+	public  ArrayList<CaseCourante[]> conversion(List<List<CaseCourante>> coup) {
+		ArrayList<CaseCourante[]> a = new ArrayList<CaseCourante[]>();
+		for (int i=0;i<coup.size();i++) {
+		int n = coup.get(i).size();
+		CaseCourante[] c = new CaseCourante[n];
+		for (int j=0;j<n;j++) {
+		c[j]=coup.get(i).get(j);
+		}
+		a.add(c);
+		}
+		return a;
+
+		}
 	
+	
+	/**
+	 * gere la fin de la partie: affichage du vainqueur et lancement de la fermeture
+	 */
 	private void finDePartie() {	
 		try { 	     			
-			 Thread.sleep (5000);
+			JOptionPane.showMessageDialog(null,(String) recevoirObjet( ) ); 
+			Thread.sleep (5000);
 		    } catch (Exception e) {
 		        e.printStackTrace();
 		    }		
@@ -209,11 +259,10 @@ public class PartieClient {
 	}
 	
 	
-	void miseAJourTableau() {
-		for (var i:chevalet.coup) {		
-			Plateau.plateau[i.ligne][i.colonne]=i.affichage;}
-	}
 	
+	/**
+	 * fermeture du socket et des flux d'échange
+	 */
 	void fermeture () {
 		try { 		
 			client.out.close();
