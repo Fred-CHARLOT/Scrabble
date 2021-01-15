@@ -9,11 +9,11 @@ public class Client {
 	ObjectOutputStream out;
 	ObjectInputStream in ;
 	Socket clientSocket;
-	Client(){		
+	Client(String ip){		
 		System.out.println("wait");
 			try {
-				
-		         clientSocket = new Socket("192.168.1.35",1800); //ip locale  + port ouvert
+				//"192.168.1.154"
+		         clientSocket = new Socket(ip,1800); //ip locale  + port ouvert
 		         out = new ObjectOutputStream(clientSocket.getOutputStream()); 
 		         out.flush();         
 		         in = new ObjectInputStream(clientSocket.getInputStream());	
