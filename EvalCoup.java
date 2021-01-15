@@ -1,4 +1,4 @@
-import java.util.ArrayList;
+﻿import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -7,7 +7,10 @@ public class EvalCoup {
 					
 //suppression du constructeur	
 	
-	
+/**
+* calcul de la somme des lettres d'un mot créé sous forme de @link{CaseCourante[]} tenant compte des bonus LD et LT
+* @return int
+*/	
 	private int sommeLettres (CaseCourante[] coup) {   
 		
 			int somme = 0;
@@ -27,7 +30,11 @@ public class EvalCoup {
 		return somme;
 	}
 	
-		
+
+/**
+* calcul du score d'un mot créé sous forme de @link{CaseCourante[]} tenant compte de tous les bonus
+* @return int
+*/		
 	
 	private int scoreMot(CaseCourante[] coup) {
 			
@@ -49,7 +56,16 @@ public class EvalCoup {
 		
 		}
 	
+
+/**
+* calcul du score de l'ensemble des mots créés par un coup joué sous la forme @link{ArrayList <CaseCourante[]>}
+* @return int
+*/
+
+
 //ajout de la liste en parametre				
+
+
 	public int scoreCoup(ArrayList <CaseCourante[]> ensMots) {
 		
 		int score = 0;
@@ -60,27 +76,20 @@ public class EvalCoup {
 		
 	}
 			   
+/**
+*mise à jour du score du joueur qui vient de jouer un coup : ensemble des mots créés sous la forme @link{ArrayList <CaseCourante[]>}
+*@param score : ancien score
+*@return int
 		
 			
 	public  int miseAJourScore (int score, ArrayList <CaseCourante[]> ensMots) {
 		score = score + scoreCoup(ensMots);
 		System.out.println(ensMots.get(0)[1].valeur);
 		return score;
-	}
+	}*/
 	
-	
-	public  int scoreFinal(int score, CaseCourante[] chevalet) {
-		
-		score=score - sommeLettres(chevalet);
-		return score;
-	}
-	
-public  int scoreFinal(int score, String [] reglette) {
-		return score;
-	}
-	
-		
-		}
+
+
 	
 	
 		
