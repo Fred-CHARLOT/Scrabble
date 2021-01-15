@@ -3,7 +3,8 @@ import java.io.Serializable;
 public class Plateau implements Serializable{
 	static String [][] plateau ;										///static
 	
-	
+/** Construction du plateau de jeu sous la forme @link{String [15][15]} avec utilisation des symétries pour les cases bonus
+*/ 	
 	Plateau(){
 	
 	plateau= new String [15][15];
