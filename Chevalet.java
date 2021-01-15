@@ -1,12 +1,10 @@
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.GridLayout;
 /// EVENENEMENT
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Random;
 
 import javax.swing.JButton;
@@ -14,12 +12,13 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import java.util.List;
 
 
 public class Chevalet  implements ActionListener {
 	JButton cases [];  //creation du tableau de 7 lettres
 	ArrayList <CaseCourante> coup= new ArrayList <CaseCourante>() ;	
-	Verificateur verificateur= new Verificateur();
+	CoupCourant verificateur= new CoupCourant();
 	JButton valider, passer, echanger,permuter;
 	JFrame	fenetre1;
 	JPanel panneau1,panneau2;
@@ -27,11 +26,13 @@ public class Chevalet  implements ActionListener {
 	int caseCourante=7,jetonsAChanger=0;
 	int serveurOuClient;
 	String reglette[];
+	
+	List<List<CaseCourante>> nouveauxMots ;
+	
 	Echange echange;
 	boolean joueurAchange=false;
 	boolean joueurAPasse=false;
 	boolean joueurAjoue=false;
-	private boolean premierCoup=true;
 	Chevalet (int ServeurClient,String reglette [] ){
 		serveurOuClient=ServeurClient;
 		echange=new Echange(this);
@@ -50,12 +51,9 @@ public class Chevalet  implements ActionListener {
 		fenetre1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
 		
 		
-		//Font f=new Font("Arial", Font.BOLD, 120);
-		
-		
-		for ( int colonne=0  ; colonne< 7;colonne++) {		//création du tableau de JButton
-			cases[colonne]= new JButton();
-			//cases[colonne].setFont(f);
+		//création du tableau de JButton
+		for ( int colonne=0  ; colonne< 7;colonne++) {		
+			cases[colonne]= new JButton();			
 			panneau1.add(cases[colonne]);
 			cases[colonne].addActionListener(this);
 		}			
@@ -82,36 +80,42 @@ public class Chevalet  implements ActionListener {
 		
 	}
 	
-	
+	/**
+	 * 	 * gestion des actions sur les boutons crées.
+	 * Un bouton permet de valider le coup.
+	 * un bouton permet de passer,
+	 * un bouton permet d'échanger ses jetons,
+	 * un bouton permet de permuter les jetons du chevalet
+	 * 
+	 * LA gestions des cases du chevalet se fait dans la classe GestionGrille
+	 * Ici il est juste géré la permutation de ces cases
+	 * 
+	 */
 		
-	public void actionPerformed(ActionEvent événement)  { /// EVENENEMENTactionPerformed
+	public void actionPerformed(ActionEvent événement)  { 		
+		JButton leBouton = (JButton) événement.getSource();  		
 		
-		JButton leBouton = (JButton) événement.getSource(); /// EVENENEMENT 
-		
-		
-		if ((leBouton==valider)&& (joueurAjoue==false) && (coup.size()!=0) ){		//	&&(serveurOuClient==0)
-			 	// à partir de la Array list "coup" :
-				//vérifier que le positionnement est valide.
-			//Si c'est bon :
-				//Extraire les mots de coup, les verifier dans un dictionnaire(message d'erreur avec le mot faux sinon?)
-				//et si c'est bon, les mettre dans une array list de tableaux cases courantes.(chaque tableau est un mot)
-				//calculer le score à l'aide de cette liste et d'EvalCoup.
-			//sinon: renvoyer les jetons sur le chevalets(pour mettre coup.size à zéro)
-			//peut être prévoir un message d'erreur, style les lettres ne sont pas alignées.
-				//Partie.compteur=0;
-			
-			
-				if (verificateur.verificateur(coup)) {
-				jetonsAChanger=coup.size();
-				joueurAjoue=true;
-				valider.setBackground(null);//changer la couleur du bouton pour passer la main						
+		if ((leBouton==valider)&& (joueurAjoue==false) && (coup.size()!=0) ){						
+			if (verificateur.verificateur(coup)) {				
+				nouveauxMots = ExtractionMotsValides.put(Plateau.plateau, coup);								
+				if(nouveauxMots != null && !nouveauxMots.isEmpty()) {					
+					for(List<CaseCourante> mot : nouveauxMots) {
+						ExtractionMotsValides.afficherMot(mot);
+					}
+					jetonsAChanger=coup.size();
+					joueurAjoue=true;
+					valider.setBackground(null);//changer la couleur du bouton pour passer la main	
+					}
+				else {
+					//TODO: Traitement a faire quand insertion non valide.					
+					JOptionPane.showMessageDialog(null, "ce mot n existe pas");
 				}
-										
+			}										
 		}	
 		
 			
 		
-		if ((leBouton==passer)&& (joueurAjoue==false) ) {	//	&&(serveurOuClient==0) 	
+		if ((leBouton==passer)&& (joueurAjoue==false) ) {	
 			videCoup();			
 			joueurAPasse=true;			
 			joueurAjoue=true;
@@ -119,7 +123,6 @@ public class Chevalet  implements ActionListener {
 		}	
 		
 	
-		
 		if ((leBouton==echanger)&& (joueurAjoue==false)) {		
 		echange.setVisible(true);
 		valider.setEnabled(false);
@@ -128,31 +131,41 @@ public class Chevalet  implements ActionListener {
 		}
 		
 		if (leBouton==permuter) {				
-			//this.reglette=modifAleat();
-			//afficheReglette();
-			
-			InsertionUtil.afficheMots(InsertionUtil.extraireMots(Plateau.plateau));
-			
-			}
+			this.reglette=modifAleat();
+			afficheReglette();
+		}
 	
 		
-		//echange de cases. par des permutations. A faire plus tard aussi en intercalant.
-				
+//echange de cases. par des permutations. A faire plus tard aussi en intercalant.
 			for (int i = 0; i<7;i++) {
-				if (leBouton==cases[i]){
-					if (caseCourante==7) {cases[i].setBackground(Color.CYAN);caseCourante=i;}
-					else {
-						if (caseCourante==i){caseCourante=7;cases[i].setBackground(null);}
-						else {permute(i,caseCourante);caseCourante=7;}
+			if (leBouton==cases[i]){
+				if (caseCourante==7) {cases[i].setBackground(Color.CYAN);caseCourante=i;}
+				else {
+					if (caseCourante==i){caseCourante=7;cases[i].setBackground(null);}
+					else {permute(i,caseCourante);caseCourante=7;}
 					}					
 				}					
 			}		
 		}		
 	
+	
+	
+	/**
+	 * 
+	 * @return le nombre de jetons à changer apres un coup joué sous forme de {@link int}
+	 */	
 	public int getJetonsAChanger() {
 		return jetonsAChanger;
 	}
 	
+	
+	
+	
+	/**
+	 * Cette méthode permet d'échanger deux boutons du chevalet, et donc les deux lettres qui y sont affichées .
+	 * @param i indice de la première case à échanger
+	 * @param j indice de la 2e case à échanger
+	 */	
 	void permute(int i,int j) {
 		String temp;
 		cases[i].setBackground(null);cases[j].setBackground(null);
@@ -163,6 +176,15 @@ public class Chevalet  implements ActionListener {
 		reglette[j]=temp;		
 		}
 	
+	
+	/**
+	 * Permet d'ajouter de nouvelles lettres au chevalet en fusionnant  le {@link String[]} nouvellesLettres
+	 * et le {@link String[]} reglette.
+	 *	 
+	 * @param nouvellesLettres 	{@link String[]} Les chaines de ce tableau vont être affichées dans le chevalet
+	 *  dans les cases vides. Les lettre sont sous forme html.
+	 *  Les cases vides du chevalet contiennent "".
+	 */
 	void majReglette(String nouvellesLettres[]) {
 		int indReglette=0;
 		for (int indNL=0; indNL<nouvellesLettres.length; indNL++) {
@@ -172,10 +194,17 @@ public class Chevalet  implements ActionListener {
 		afficheReglette();
 	}
 	
+	/**
+	 * met à jour l'affichage du chevalet à partir du {@link String[]} réglette.
+	 */
 	void afficheReglette() {
 		for (int i=0; i<7;i++)cases[i].setText(reglette[i]);		
 	}
-	
+	/**
+	 * Vide la {@link ArrayList } de {@link <CaseCourante>} coup ,
+	 * en remettant les jetons posés sur la grille dans le chevalet, et effaçant coup
+	 * La reglette est aussi mise à jour.
+	 */
 	void videCoup()	{
 		int compteur=0;
 		for (var i : coup) {
@@ -186,6 +215,10 @@ public class Chevalet  implements ActionListener {
 	coup.clear();	
 	}
 
+	/**
+	 * Permute aléatoire les lettres sur le chevalet en permutant les lettres de la reglette.
+	 * @return String []
+	 */
 	String [] modifAleat() {	
 	ArrayList <String> a = new ArrayList(Arrays.asList(this.reglette));
 	String[] b = new String[7];	
@@ -198,6 +231,12 @@ public class Chevalet  implements ActionListener {
 	return b;
 	}
 
+	
+	
+	/**
+	 * cherche une case vide dans le chevalet et retourne son indice.
+	 * @return {@link int} indice de la premiere case vide
+	 */
 	int caseVide() {
 		int i;
 		for (i=0; i<7;i++) {
@@ -205,18 +244,37 @@ public class Chevalet  implements ActionListener {
 		}
 		return i;
 	}
-
-boolean isVide(String t []) {
-	for (int i=0; i<t.length;i++) {if (!t[i].equals(""))return false;}
-	return true;
-}
-
-int retrouveCaseDansCoup(int ligne, int colonne) {
-	for (var i : coup) {
-		if (i.ligne ==ligne && i.colonne ==colonne) return coup.indexOf(i);	
+	
+	
+	
+	/**
+	 * booleen qui renvoie true si un tableau est vide (ne contient que des  "")
+	 * @param t	{@link String []} 
+	 * 
+	 * @return	true si le tableau est vide(ne contient que des "")
+	 */
+	boolean isVide(String t []) {
+		for (int i=0; i<t.length;i++) {if (!t[i].equals(""))return false;}
+		return true;
 	}
-	 return -1;
-}
+
+	
+	/**
+	 * permet de retrouver de retrouver l'indice d'une lettre posée sur la grille dans la 
+	 * {@link ArrayList } de {@link <CaseCourante>} coup.
+	 * 
+	 * @param   ligne  {@link int} :indice de la ligne sur laquelle est placée la lettre.
+	 * @param colonne {@link int} :indice de la ligne sur laquelle est placée la lettre.
+	 * 
+	 * @return {@link int} indice de la lettre dans coup.
+	 */
+	
+	int retrouveCaseDansCoup(int ligne, int colonne) {
+		for (var i : coup) {
+			if (i.ligne ==ligne && i.colonne ==colonne) return coup.indexOf(i);	
+		}
+		 return -1;
+	}
 
 
 
